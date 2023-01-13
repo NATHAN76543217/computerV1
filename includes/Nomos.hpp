@@ -3,6 +3,7 @@
 
 # include <iostream>
 # include <string>
+# include <sstream>
 
 class Nomos
 {
@@ -25,11 +26,14 @@ class Nomos
 		Nomos &		operator*=( Nomos const & rhs );
 		Nomos &		operator/=( Nomos const & rhs );
 
+		std::string	getRawStr( void ) const;
+
 		double		getValue( void ) const;
 		void		setValue( double value);
 		void		addValue(double n);
 		size_t		getExponent( void ) const;
 		void		setExponent( size_t exponent );
+		void		switchSign( void );
 		bool		isNull(void) const;
 
 	private:

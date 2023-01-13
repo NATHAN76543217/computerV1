@@ -22,13 +22,25 @@
 // DONE tokens are: "[0-9] X + - * / ^ = "
 // Changed get a list of Nomos separated by a +
 // DONE reduce each sides
-// TODO forme réduite: end by ' = 0'
-// TODO check complexity and select the right resolution method
-// TODO Read float numbers
+// DONE forme réduite: end by ' = 0'
+// DONE handle case of equality
+// DONE handle case of no X
+// DONE check complexity and select the right resolution method
+// DONE Read float numbers
+// TODO handle second degree
 // TODO add arguments
 //  - verbose
 //  - change the unknown character
 //  - display help
+
+# define RESET_ANSI		"\033[0m"		
+# define BOLD_ANSI		"\033[1m"		
+# define RED_ANSI		"\033[91m"		
+# define YELLOW_ANSI	"\033[93m"		
+# define BLUE_ANSI		"\033[96m"		
+# define LGREY_ANSI		"\033[37m"		
+# define GREEN_ANSI		"\033[92m"		
+# define DBLUE_ANSI		"\033[94m"	
 
 class Computerv1
 {
@@ -44,9 +56,16 @@ class Computerv1
 		bool			splitSides( void );
 		bool			tokeniseASide( std::string & input, std::vector<Nomos> & queue);
 		bool			tokeniseSides( void );
-		void			reduceSides( void );
-		void			reduceASide( std::vector<Nomos> & side);
+		void			reduceLeftSide();
+		void			swapSides( void );
+		Nomos*			extractX( std::string & input );
+
+		bool			resolve( void );
+		bool			interpretation( void );
 		void			dumpSides( void ) const;
+
+		Nomos&			getDegreeLeftX( size_t degree);
+
 		Computerv1 &	operator=( Computerv1 const & rhs );
 
 		bool			getOptVerbose( void ) const;
@@ -60,10 +79,13 @@ class Computerv1
 
 	private:
 		std::string			input;
+		std::string			input_saved;
 		std::string			input_right;
 		std::string			input_left;
+		std::string			reduced_form;
 		bool				opt_verbose;
 		char				opt_char;
+		size_t				degree;
 		std::vector<Nomos>	leftside;
 		std::vector<Nomos>	rightside;
 

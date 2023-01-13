@@ -28,12 +28,23 @@ int main(int ac, char **av)
 		return EXIT_FAILURE;
 	}
 	com.dumpSides();
-	std::cout << "--- Reducing ..." << std::endl;
-	com.reduceSides();
+	
+	std::cout << GREEN_ANSI << "--- Swap..." << RESET_ANSI << std::endl;
+	com.swapSides();
 	com.dumpSides();
-	// std::cout << "--- Swap ..." << std::endl;
-	// com.swapSides();
-	// com.dumpSides();
+
+	std::cout << GREEN_ANSI << "--- Reducing..." << RESET_ANSI << std::endl;
+	com.reduceLeftSide();
+	com.dumpSides();
+
+	std::cout << GREEN_ANSI << "--- Interpretation..." << RESET_ANSI << std::endl;
+	if (com.interpretation() == false)
+		return EXIT_FAILURE;
+
+	std::cout << GREEN_ANSI << "--- Resolution..." << RESET_ANSI << std::endl;
+	if (com.resolve() == false)
+		return EXIT_FAILURE;
+
 
 	return EXIT_SUCCESS;
 }
