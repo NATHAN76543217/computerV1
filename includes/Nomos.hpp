@@ -9,11 +9,12 @@ class Nomos
 
 	public:
 
-		Nomos(ssize_t value = 0, size_t exponent = 0);
+		Nomos(double value = 0, size_t exponent = 0);
 		Nomos( Nomos const & src );
 		~Nomos();
 
 		Nomos &		operator=( Nomos const & rhs );
+
 		Nomos 		operator+( Nomos const & rhs ) const;
 		Nomos 		operator-( Nomos const & rhs ) const;
 		Nomos 		operator*( Nomos const & rhs ) const;
@@ -24,15 +25,15 @@ class Nomos
 		Nomos &		operator*=( Nomos const & rhs );
 		Nomos &		operator/=( Nomos const & rhs );
 
-		ssize_t		getValue( void ) const;
-		void		setValue( ssize_t value);
+		double		getValue( void ) const;
+		void		setValue( double value);
+		void		addValue(double n);
 		size_t		getExponent( void ) const;
 		void		setExponent( size_t exponent );
-		void		addScalar(size_t n);
 		bool		isNull(void) const;
 
 	private:
-		ssize_t		_value;
+		double		_value;
 		size_t		_exponent;
 };
 

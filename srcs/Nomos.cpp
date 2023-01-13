@@ -5,9 +5,10 @@
 */
 
 
-Nomos::Nomos(ssize_t value, size_t exponent) : _value(value), _exponent(exponent)
+Nomos::Nomos(double value, size_t exponent) : _value(value), _exponent(exponent)
 {
 }
+
 
 Nomos::Nomos( const Nomos & src ) : _value(src.getValue()), _exponent(src.getExponent())
 {
@@ -114,7 +115,7 @@ std::ostream &			operator<<( std::ostream & o, Nomos const & i )
 ** --------------------------------- METHODS ----------------------------------
 */
 
-void				Nomos::addScalar(size_t nb)
+void				Nomos::addValue(double nb)
 {
 	this->_value += nb;
 
@@ -128,12 +129,12 @@ bool				Nomos::isNull( void ) const
 ** --------------------------------- ACCESSOR ---------------------------------
 */
 
-ssize_t				Nomos::getValue( void ) const
+double				Nomos::getValue( void ) const
 {
 	return this->_value;
 }
 
-void				Nomos::setValue( ssize_t value )
+void				Nomos::setValue( double value )
 {
 	this->_value = value;
 }

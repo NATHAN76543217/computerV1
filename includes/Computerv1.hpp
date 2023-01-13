@@ -40,8 +40,8 @@ class Computerv1
 		Computerv1( Computerv1 const & src );
 		~Computerv1();
 
-		bool			checkEquals( void );
-		void			splitSides( void );
+		bool			trim( void );
+		bool			splitSides( void );
 		bool			tokeniseASide( std::string & input, std::vector<Nomos> & queue);
 		bool			tokeniseSides( void );
 		void			reduceSides( void );
@@ -64,8 +64,6 @@ class Computerv1
 		std::string			input_left;
 		bool				opt_verbose;
 		char				opt_char;
-		size_t				equal_pos;
-		std::vector<std::string> tokens;
 		std::vector<Nomos>	leftside;
 		std::vector<Nomos>	rightside;
 

@@ -11,9 +11,15 @@ int main(int ac, char **av)
 	}
 	Computerv1 com(av[1]);
 	parsing_arguments(ac, av, &com);
-	if (com.checkEquals() == false)
+
+	std::cout << "--- Trim ..." << std::endl;
+	if (com.trim() == false)
 		return EXIT_FAILURE;
-	com.splitSides();
+
+	std::cout << "--- Split ..." << std::endl;
+	if (com.splitSides() == false)
+		return EXIT_FAILURE;
+	
 	std::cout << "--- Tokenize ..." << std::endl;
 	if (com.tokeniseSides() == false)
 	{
@@ -24,7 +30,7 @@ int main(int ac, char **av)
 	std::cout << "--- Reducing ..." << std::endl;
 	com.reduceSides();
 	com.dumpSides();
-	// swap sides
+	// std::cout << "--- Swap ..." << std::endl;
 	// com.swapSides();
 	// com.dumpSides();
 

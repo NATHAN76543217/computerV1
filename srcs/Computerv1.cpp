@@ -96,6 +96,13 @@ void			Computerv1::reduceASide( std::vector<Nomos> & side)
 	side = reducedSide;
 }
 
+bool			Computerv1::trim( void )
+{
+	this->input.erase(remove_if(this->input.begin(), this->input.end(), isspace), this->input.end());
+	std::cout << "Trimed: " << this->input << std::endl;
+	return true;
+}
+
 bool			Computerv1::tokeniseSides( void )
 {
 	if (this->tokeniseASide(this->input_left, this->leftside) == false)
@@ -107,23 +114,17 @@ bool			Computerv1::tokeniseSides( void )
 
 bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queue )
 {
-	std::cout << "before trim: " << input << std::endl;
-	input.erase(remove_if(input.begin(), input.end(), isspace), input.end());
-	std::cout << "Trimed: " << input << std::endl;
-
-	// std::cout << "before trim: " << this->input_right << std::endl;
-	// this->input_right.erase(remove_if(this->input_right.begin(), this->input_right.end(), isspace), this->input_right.end());
-	// std::cout << "Trimed: " << this->input_right << std::endl;
-	std::string::iterator it = input.begin();
 	size_t pos	= 0;
+	// size_t oper_pos	= 0;
+	std::string::iterator it = input.begin();
 	while (input.length() != 0)
 	{
-		std::cout << "SIDE = (" << input << ") len = " << input.length() << std::endl;
-		// read a number
+		std::cout << "To process left = (" << input << ") len = " << input.length() << std::endl;
+		// read a whole number
 		it = input.begin();
-		ssize_t nb	= std::stoi(input, &pos);
-		Nomos* nomos = new Nomos(nb);
-		std::cout << "GET = " << nb << std::endl;
+		Nomos* nomos = new Nomos(std::stod(input, &pos));
+
+		std::cout << "TOK = " << *nomos << std::endl;
 		// check next char
 		char oper = input[pos];
 		std::cout << " followed by oper = '" << oper << "'" << std::endl;
@@ -142,10 +143,9 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 			{
 				input.erase(it, it + pos + 1);
 				try {
-					ssize_t nb2	= std::stoi(input, &pos);
 					//after * is a number
-					std::cout << "nb2 = " << nb2 << std::endl;
-					Nomos* nomos2 = new Nomos(nb2);
+					Nomos* nomos2 = new Nomos(std::stod(input, &pos));
+					std::cout << "TOK after [*/] = " << *nomos2 << std::endl;
 					if (oper == '*')
 					{
 						std::cout << (*nomos) << " * " << (*nomos2) << " = " << *nomos * *nomos2 << std::endl;
@@ -163,21 +163,29 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 					// next after * is X
 					if (input[0] != this->opt_char)
 					{
-						std::cerr << "Invalid character: number(X) expected (get '" << input<< "'" << std::endl;
+						std::cerr << "Invalid character: number(X) expected (get '" << input << "'" << std::endl;
 						return false;
 					}
-					std::cout << "followed by a X" << std::endl;
+					std::cout << "followed by a X ";
 					pos = 1;
 					// Nomos* nomos2 = new Nomos(nomos);
 					// delete X
 					// input.erase(input.begin(), input.begin() + 1);
-					if (input[1] == '^')
+					if (input[1] != '^')
+					{
+						// exponent is 1
+						std::cout << "without exponent" << std::endl;
+						nomos->setExponent(1);
+						// goto next operand
+					}
+					else
 					{
 						input.erase(input.begin(), input.begin() + 2);
 						// check exponent
 						try {
 							ssize_t exp	= std::stoi(input, &pos);
 							// exp is valid
+							std::cout << "with exponent " << exp << std::endl;
 							nomos->setExponent(nomos->getExponent() + exp);
 							// goto next operand
 						}
@@ -189,21 +197,15 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 						}
 						
 					}
-					else
-					{
-						// exponent is 1
-						nomos->setExponent(1);
-						// goto next operand
-					}
 					std::cout << (*nomos) << " <= old * X" << std::endl;
-
 				}
 
 				oper = input[pos];
 				std::cout << "and next oper = '" << oper << "'" << std::endl;
 				
-			}	
-			this->input_left.erase(it, it + pos + 1);
+			}
+			std::cout << "End of token" << std::endl;
+			input.erase(it, it + pos + 1);
 			queue.push_back(*nomos);
 			continue;
 		}
@@ -215,90 +217,32 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 	}
 	return true;
 }
-// 		std::string::iterator it = this->input_left.begin();
-// 		size_t pos	= 0;
-// 		int no_except = 1;
-// 		while (no_except && this->input_left.length() != 0)
-// 		{
-// 			try {
-// 				ssize_t nb	= std::stoi(this->input_left, &pos);
-// 				std::cout << nb << " nb/pos " << pos << std::endl;
-// 				nomos->addScalar(nb);
-// 				no_except = 0;
-// 			}
-// 			catch (std::exception & e){
-// 				if (*it == '*')
-// 				{
-// 					std::vector<Nomos>::reference old = queue.back();
-// 					ssize_t nb	= std::stoi(&this->input_left[1], &pos);
-// 					std::cout << "multiply by " << nb << std::endl;
-// 					old.setValue(old.getValue() * nb);
-// 					std::cout << old.getValue() << " newnb/pos " << pos << std::endl;
-// 					this->input_left.erase(it, it + pos + 1);
-					
-// 				}
-// 				else if (*it == '/')
-// 				{
-// 					std::vector<Nomos>::reference old = this->leftside.back();
-// 					ssize_t nb	= std::stoi(&this->input_left[1], &pos);
-// 					std::cout << "divided by " << nb << std::endl;
-// 					old.setValue(old.getValue() / nb);
-// 					std::cout << old.getValue() << " newnb/pos " << pos << std::endl;
-// 					this->input_left.erase(it, it + pos + 1);
-					
-// 				}
-// 			}
-// 		}
 
-// 		// if (*it == this->opt_char)
-// 		// {
-// 		// 	if (*(it + 1) == '^')
-// 		// 	{
-// 		// 		if (*(it + 2) )
-// 		// 		{
-// 		// 			stoi
-// 		// 		} 
-// 		// 	}
-// 		// }
-// 		this->input_left.erase(it, it + pos);
-// 		if (nomos->isNull() == false)
-// 			this->leftside.push_back(*nomos); 
-// 		std::cout << "Trimed: " << this->input_left << std::endl;
-
-// 	}
-// 	std::cout << "Left side done" << std::endl
-// 	// while (this->input_left.length() == 0)
-// 	// {
-
-// 	// }
-// }
-
-void			Computerv1::splitSides( void )
+bool			Computerv1::splitSides( void )
 {
-	this->input_left = this->input.substr(0, this->equal_pos);
-	this->input_right = this->input.substr(this->equal_pos + 1);
-	std::cout << "Left: " << this->input_left << std::endl;
-	std::cout << "Right: " << this->input_right << std::endl;
-}
-
-bool			Computerv1::checkEquals( void )
-{
-	std::cout << this->input << std::endl;
-	size_t first = this->input.find_first_of('=');
+	size_t first = 0;
+	size_t last = 0;
+	size_t equal_pos = 0;
+	first = this->input.find_first_of('=');
 	if (first == std::string::npos)
 	{
 		std::cerr << "Invalid Syntax: No Equal Sign (=) Found" << std::endl;
 		return false;
 	}
-	size_t last = this->input.find_last_of('=');
+	last = this->input.find_last_of('=');
 	if (last != first)
 	{
 		std::cerr << "Invalid Syntax: Too Many Equal Sign (=) Found" << std::endl;
 		return false;
 	}
-	this->equal_pos = last;
+	equal_pos = last;
+	this->input_left = this->input.substr(0, equal_pos);
+	this->input_right = this->input.substr(equal_pos + 1);
+	std::cout << "Left  string: " << this->input_left << std::endl;
+	std::cout << "Right string: " << this->input_right << std::endl;
 	return true;
 }
+
 
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
