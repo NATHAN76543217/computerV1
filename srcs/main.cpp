@@ -9,21 +9,22 @@ int main(int ac, char **av)
 		dprintf(STDERR_FILENO, "Bad number of arguments (1 argument expected but %d provided)\n", ac - 1);
 		return EXIT_FAILURE;
 	}
+	std::cout << GREEN_ANSI << "--- Gathering..." << RESET_ANSI << std::endl;
 	Computerv1 com(av[1]);
 	parsing_arguments(ac, av, &com);
 
-	std::cout << "--- Trim ..." << std::endl;
+	std::cout << GREEN_ANSI << "--- Trim..." << RESET_ANSI << std::endl;
 	if (com.trim() == false)
 		return EXIT_FAILURE;
 
-	std::cout << "--- Split ..." << std::endl;
+	std::cout << GREEN_ANSI << "--- Split..." << RESET_ANSI << std::endl;
 	if (com.splitSides() == false)
 		return EXIT_FAILURE;
 	
-	std::cout << "--- Tokenize ..." << std::endl;
+	std::cout << GREEN_ANSI << "--- Tokenize..." << RESET_ANSI << std::endl;
 	if (com.tokeniseSides() == false)
 	{
-		std::cerr << "Error while tokenizing. Aborting..." << std::endl;
+		std::cerr << RED_ANSI << "Error while tokenizing. Aborting..." << RESET_ANSI << std::endl;
 		return EXIT_FAILURE;
 	}
 	com.dumpSides();

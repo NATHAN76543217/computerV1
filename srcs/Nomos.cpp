@@ -123,11 +123,24 @@ void				Nomos::addValue(double nb)
 
 bool				Nomos::isNull( void ) const
 {
-	return (this->_value == 0 && this->_exponent == 0);
+	return (this->_value == 0);
 }
+
+void				Nomos::switchSign( void )
+{
+	this->_value *= -1;
+}
+
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
+
+std::string			Nomos::getRawStr( void ) const
+{
+	std::stringstream ss;
+	ss << this->_value << " * X^" << this->_exponent;
+	return ss.str();
+}
 
 double				Nomos::getValue( void ) const
 {
