@@ -70,7 +70,7 @@ class Computerv1
 		bool			interpretation( void );
 		void			dumpSides( void ) const;
 
-		Nomos&			getDegreeLeftX( size_t degree);
+		double			getDegreeLeftValue( size_t degree);
 
 		Computerv1 &	operator=( Computerv1 const & rhs );
 

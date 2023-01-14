@@ -100,7 +100,7 @@ bool			Computerv1::interpretation( void )
 		{
 			if (it != this->leftside.begin())
 				this->reduced_form += " + ";
-			this->reduced_form.append(it->getRawStr());
+			this->reduced_form.append(it->getRawStr( this->getOptChar() ));
 		}
 	}
 	this->reduced_form += " = 0";
@@ -164,13 +164,10 @@ Nomos*			Computerv1::extractX( std::string & input )
 		return nullptr;
 	}
 
-	std::cout << "- followed by a X ";
 	input.erase(input.begin() + offset); // Erase X
 	if (input[0] != '^')
 	{
-		// exponent is 1
 		exp = 1;
-		std::cout << "with no exponent specified" << std::endl;
 		// goto next operand
 	}
 	else
@@ -181,7 +178,6 @@ Nomos*			Computerv1::extractX( std::string & input )
 			// Get exponant value
 			exp	= std::stoi(input, &offset);
 			// exp is valid
-			std::cout << " exponent " << exp << std::endl;
 			input.erase(input.begin(), input.begin() + offset);
 
 			// goto next operand
@@ -290,7 +286,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 				}
 				delete (nomos2);
 				oper = input[pos];
-				std::cout << "and next oper = '" << oper << "'" << std::endl;
+				std::cout << "0PER = '" << oper << "'" << std::endl;
 				
 			}
 			std::cout << "----------" << std::endl;
@@ -346,6 +342,7 @@ bool			Computerv1::resolve( void )
 	switch (this->degree)
 	{
 		case 0:
+			// degree 0 
 			// Only numbers
 			if (this->leftside.empty())
 			{
@@ -358,10 +355,11 @@ bool			Computerv1::resolve( void )
 			}
 			break;
 		case 1:
+			// degree 1 
 			// distinguish X in A*X^0 + B*X^1 = 0
 			// X = -B / A
-			A = this->getDegreeLeftX(1).getValue();
-			B = this->getDegreeLeftX(0).getValue();
+			A = this->getDegreeLeftValue(1);
+			B = this->getDegreeLeftValue(0);
 			if (A == 0)
 			{
 				std::cerr << "This equation imply a division by 0 and so have no resolution." << std::endl;
@@ -372,28 +370,23 @@ bool			Computerv1::resolve( void )
 
 			break;
 		case 2:
-			// compute disciminant
-			A = this->getDegreeLeftX(2).getValue();
-			B = this->getDegreeLeftX(1).getValue();
-			C = this->getDegreeLeftX(0).getValue();
+			// degree 2 
+			A = this->getDegreeLeftValue(2);
+			B = this->getDegreeLeftValue(1);
+			C = this->getDegreeLeftValue(0);
 			delta = (B * B) - (4 * A * C);
 			std::cout << "Discriminant: " << delta << std::endl;
 			if (delta < 0)
-			{
 				std::cout << "Delta is strictly negative. This equation have no solution." << std::endl;
-			}
 			else if (delta == 0)
-			{
-				std::cout << "Delta is null. This equation have 1 solution: " << std::endl;
-				std::cout << "-> " << this->opt_char << " = " << (- B / (2 * A)) << std::endl;
-			
-			}
+				std::cout << "Delta is null. This equation have 1 solution: \n-> " \
+					<< this->opt_char << " = " << (- B / (2 * A)) << std::endl;
 			else
 			{
 				// two solutions
-				std::cout << "Delta is strictly positive. This equation have 2 solutions: " << std::endl;
-				std::cout << "-> " << this->opt_char << " = " << ((- B - my_sqrt(delta) ) / (2 * A)) << std::endl;
-				std::cout << "-> " << this->opt_char << " = " << ((- B + my_sqrt(delta) ) / (2 * A)) << std::endl;
+				std::cout << "Delta is strictly positive. This equation have 2 solutions: \n-> " \
+					<< this->opt_char << " = " << ((- B - my_sqrt(delta) ) / (2 * A)) \
+					<< "\n-> " << this->opt_char << " = " << ((- B + my_sqrt(delta) ) / (2 * A)) << std::endl;
 			}
 			break;
 	}
@@ -406,20 +399,17 @@ bool			Computerv1::resolve( void )
 
 
 /*
-// Return the first occurence of a Nomos of the specified 'degree' 
+** Return the first occurence of a Nomos of the specified 'degree' 
 */
-Nomos&			Computerv1::getDegreeLeftX( size_t degree)
+double			Computerv1::getDegreeLeftValue( size_t degree)
 {
 	std::vector<Nomos>::iterator it = this->leftside.begin();
 	for (; it != this->leftside.end(); it++)
 	{
 		if (it->getExponent() == degree)
-		{
-			return *it;
-		}
+			return it->getValue();
 	}
-	std::cerr << "Pas sensé passer ici" << std::endl;
-	return *it;
+	return 0;
 }
 
 

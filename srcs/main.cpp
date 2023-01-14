@@ -1,6 +1,5 @@
 # include "Computerv1.hpp"
 
-
 typedef struct opt
 {
 	bool verbose;
@@ -31,10 +30,7 @@ int main(int ac, char **av)
 	
 	std::cout << GREEN_ANSI << "--- Tokenize..." << RESET_ANSI << std::endl;
 	if (com.tokeniseSides() == false)
-	{
-		// std::cerr << RED_ANSI << "Error while tokenizing. Aborting..." << RESET_ANSI << std::endl;
 		return EXIT_FAILURE;
-	}
 	com.dumpSides();
 	
 	std::cout << GREEN_ANSI << "--- Swap..." << RESET_ANSI << std::endl;
@@ -52,7 +48,6 @@ int main(int ac, char **av)
 	std::cout << GREEN_ANSI << "--- Resolution..." << RESET_ANSI << std::endl;
 	if (com.resolve() == false)
 		return EXIT_FAILURE;
-
 
 	return EXIT_SUCCESS;
 }

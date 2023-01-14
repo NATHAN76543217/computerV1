@@ -70,6 +70,7 @@ Nomos &				Nomos::operator-=( Nomos const & rhs )
 	if (this->_exponent != rhs._exponent)
 		throw std::exception();
 	this->_value -= rhs._value;
+
 	return *this;
 }
 
@@ -78,6 +79,7 @@ Nomos 				Nomos::operator*( Nomos const & rhs ) const
 	Nomos nm;
 	nm._value = this->_value * rhs._value;
 	nm._exponent = this->_exponent + rhs._exponent;
+
 	return nm;
 }
 
@@ -94,6 +96,7 @@ Nomos 				Nomos::operator/( Nomos const & rhs ) const
 	Nomos nm;
 	nm._value = this->_value / rhs._value;
 	nm._exponent = std::abs((long long)(this->_exponent - rhs._exponent));
+
 	return nm;
 }
 
@@ -101,6 +104,7 @@ Nomos &				Nomos::operator/=( Nomos const & rhs )
 {
 	this->_value /= rhs._value;
 	this->_exponent = std::abs((long long)(this->_exponent - rhs._exponent));
+
 	return *this;
 }
 
@@ -118,7 +122,6 @@ std::ostream &			operator<<( std::ostream & o, Nomos const & i )
 void				Nomos::addValue(double nb)
 {
 	this->_value += nb;
-
 }
 
 bool				Nomos::isNull( void ) const
@@ -135,10 +138,10 @@ void				Nomos::switchSign( void )
 ** --------------------------------- ACCESSOR ---------------------------------
 */
 
-std::string			Nomos::getRawStr( void ) const
+std::string			Nomos::getRawStr( char unknown ) const
 {
 	std::stringstream ss;
-	ss << this->_value << " * X^" << this->_exponent;
+	ss << this->_value << " * " << unknown << "^" << this->_exponent;
 	return ss.str();
 }
 

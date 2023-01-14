@@ -26,7 +26,7 @@ class Nomos
 		Nomos &		operator*=( Nomos const & rhs );
 		Nomos &		operator/=( Nomos const & rhs );
 
-		std::string	getRawStr( void ) const;
+		std::string	getRawStr( char unknown ) const;
 
 		double		getValue( void ) const;
 		void		setValue( double value);
