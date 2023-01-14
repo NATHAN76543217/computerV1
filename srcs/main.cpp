@@ -31,15 +31,18 @@ int main(int ac, char **av)
 	std::cout << GREEN_ANSI << "--- Tokenize..." << RESET_ANSI << std::endl;
 	if (com.tokeniseSides() == false)
 		return EXIT_FAILURE;
-	com.dumpSides();
+	if (com.getOptVerbose())
+		com.dumpSides();
 	
 	std::cout << GREEN_ANSI << "--- Swap..." << RESET_ANSI << std::endl;
 	com.swapSides();
-	com.dumpSides();
+	if (com.getOptVerbose())
+		com.dumpSides();
 
 	std::cout << GREEN_ANSI << "--- Reducing..." << RESET_ANSI << std::endl;
 	com.reduceLeftSide();
-	com.dumpSides();
+	if (com.getOptVerbose())
+		com.dumpSides();
 
 	std::cout << GREEN_ANSI << "--- Interpretation..." << RESET_ANSI << std::endl;
 	if (com.interpretation() == false)

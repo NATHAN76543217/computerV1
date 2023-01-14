@@ -45,7 +45,7 @@ Computerv1 &				Computerv1::operator=( Computerv1 const & rhs )
 void 			Computerv1::dumpSides( void ) const
 {
 	std::vector<Nomos>::const_iterator lit = this->leftside.begin();
-	std::cout << " --- Dump Left ---" << std::endl;
+	std::cout << "--- Left Stack ---" << std::endl;
 	while (lit != this->leftside.end())
 	{
 		std::cout << "  - Nomos: "<< *lit << std::endl;
@@ -53,7 +53,7 @@ void 			Computerv1::dumpSides( void ) const
 	}
 
 	std::vector<Nomos>::const_iterator rit = this->rightside.begin();
-	std::cout << " --- Dump Right ---" << std::endl;
+	std::cout << "--- Right Stack ---" << std::endl;
 	while (rit != this->rightside.end())
 	{
 		std::cout << "  - Nomos: " << *rit << std::endl;
@@ -127,14 +127,17 @@ void			Computerv1::swapSides( void )
 bool			Computerv1::trim( void )
 {
 	this->input.erase(remove_if(this->input.begin(), this->input.end(), isspace), this->input.end());
-	std::cout << BOLD_ANSI << "Trimed: " << RESET_ANSI << this->input << std::endl;
+	if (this->getOptVerbose())
+		std::cout << BOLD_ANSI << "Trimed: " << RESET_ANSI << this->input << std::endl;
 	return true;
 }
 
 bool			Computerv1::tokeniseSides( void )
 {
+	std::cout << " - Left Side - "<< std::endl;
 	if (this->tokeniseASide(this->input_left, this->leftside) == false)
 		return false;
+	std::cout << " - Right Side - "<< std::endl;
 	if (this->tokeniseASide(this->input_right, this->rightside) == false)
 		return false;
 	return true;
@@ -190,16 +193,16 @@ Nomos*			Computerv1::extractX( std::string & input )
 		}			
 	}
 	Nomos* nomos =	new Nomos(value, exp);
-	std::cout << "Xtracted: " << (*nomos)  << std::endl;
+	if (this->getOptVerbose())
+		std::cout << "Xtracted: " << (*nomos)  << std::endl;
 	return nomos;
 }
 
 bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queue )
 {
-	size_t pos		= 0;
+	size_t oper_pos	= 0;
 	Nomos* nomos	= nullptr;
 	Nomos* nomos2	= nullptr;
-	// size_t oper_pos	= 0;
 	std::string::iterator it = input.begin();
 	while (input.length() != 0)
 	{
@@ -208,7 +211,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 		it = input.begin();
 		try {
 			// read a whole number
-			nomos = new Nomos(std::stod(input, &pos));
+			nomos = new Nomos(std::stod(input, &oper_pos));
 		}
 		catch (std::invalid_argument & e)
 		{
@@ -219,26 +222,31 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 				std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
 				return false;
 			}
-			std::cout << "----------" << std::endl;
+			if (this->getOptVerbose())
+				std::cout << "----------" << std::endl;
 			queue.push_back(*nomos);
 			// this
 			// std::cout << "LEFT: " << input << std::endl;
 			continue;
 		}
-		std::cout << "TOK = " << *nomos << std::endl;
+		char oper = input[oper_pos];
 		// check next char
-		char oper = input[pos];
-		std::cout << "OPER = '" << oper << "'" << std::endl;
+		if (this->getOptVerbose())
+		{
+			std::cout << "TOK = " << *nomos << std::endl;
+			std::cout << "OPER = '" << oper << "'" << std::endl;
+		}	
 		if (oper == '+' || oper == '-' || oper == '\0')
 		{
 			// next token
-			std::cout << "----------" << std::endl;
+			if (this->getOptVerbose())
+				std::cout << "----------" << std::endl;
 			if (oper == '+')
-				input.erase(it, it + pos + 1);
-			else if (oper == '-' && input[pos + 1] == '-')
-				input.erase(it, it + pos + 1);
+				input.erase(it, it + oper_pos + 1);
+			else if (oper == '-' && input[oper_pos + 1] == '-')
+				input.erase(it, it + oper_pos + 1);
 			else
-				input.erase(it, it + pos);
+				input.erase(it, it + oper_pos);
 			queue.push_back(*nomos);
 			delete nomos;
 			continue;
@@ -248,10 +256,10 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 			// after number its a * or /
 			while ((oper == '*' || oper == '/') && input.length() != 0)
 			{
-				input.erase(it, it + pos + 1);
+				input.erase(it, it + oper_pos + 1);
 				try {
 					//after * is a number
-					nomos2 = new Nomos(std::stod(input, &pos));
+					nomos2 = new Nomos(std::stod(input, &oper_pos));
 				}
 				catch (std::invalid_argument & e)
 				{
@@ -262,13 +270,14 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 						std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
 						return false;
 					}
-					pos = 0;
+					oper_pos = 0;
 				}
-
-				std::cout << "TOK " << oper << *nomos2 << std::endl;
+				if (this->getOptVerbose())
+					std::cout << "TOK " << oper << *nomos2 << std::endl;
 				if (oper == '*')
 				{
-					std::cout << (*nomos) << " * " << (*nomos2) << " = " << *nomos * *nomos2 << std::endl;
+					if (this->getOptVerbose())
+						std::cout << (*nomos) << " * " << (*nomos2) << " = " << *nomos * *nomos2 << std::endl;
 					*nomos *= *nomos2;
 				}
 				else
@@ -278,26 +287,29 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 						// Avoid division by 0
 						delete nomos;
 						delete nomos2;
-						std::cerr << "This equation imply a division by 0 which is forbidden." << std::endl; 
+						std::cerr << RED_ANSI << "This equation imply a division by 0 which is forbidden." << RESET_ANSI << std::endl; 
 						return false;
 					}
-					std::cout << (*nomos) << " / " << (*nomos2) << " = " << *nomos / *nomos2 << std::endl;
+					else if (this->getOptVerbose())
+						std::cout << (*nomos) << " / " << (*nomos2) << " = " << *nomos / *nomos2 << std::endl;
 					*nomos /= *nomos2;
 				}
 				delete (nomos2);
-				oper = input[pos];
-				std::cout << "0PER = '" << oper << "'" << std::endl;
+				oper = input[oper_pos];
+				if (this->getOptVerbose())
+					std::cout << "0PER = '" << oper << "'" << std::endl;
 				
 			}
-			std::cout << "----------" << std::endl;
-			input.erase(it, it + pos);
+			if (this->getOptVerbose())
+				std::cout << "----------" << std::endl;
+			input.erase(it, it + oper_pos);
 			queue.push_back(*nomos);
 			delete nomos;
 			continue;
 		}
 		else
 		{
-			std::cerr << RED_ANSI << "Invalid Syntax: Bad character after number. '" << oper << "' at " << pos + 1 << "" << std::endl;
+			std::cerr << RED_ANSI << "Invalid Syntax: Bad character after number. '" << oper << "' at " << oper_pos + 1 << "" << std::endl;
 			return false;		
 		}
 	}
@@ -330,7 +342,7 @@ bool			Computerv1::splitSides( void )
 }
 
 /*
-// Select the right resolution method and call it  
+** Select the right resolution method and call it  
 */
 bool			Computerv1::resolve( void )
 {
