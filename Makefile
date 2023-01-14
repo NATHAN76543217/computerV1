@@ -20,7 +20,7 @@ LIB_DIR		= lib
 # - fill only with name of the file
 # - make will check for the file in SRC_DIR
 # - use "-" if empty
-SRCS		=	main.cpp Computerv1.cpp arguments.cpp Nomos.cpp
+SRCS		=	main.cpp Computerv1.cpp arguments.cpp Nomos.cpp utils.cpp
 HEADERS		=	Computerv1.hpp Nomos.hpp
 
 LIBRARIES	=	argparse

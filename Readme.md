@@ -15,10 +15,10 @@ Phase 2:
 - - - multiply it with the first token
 
 Phase 3:
-- add all token with the same exponent together <- Actually ->
+- switch each tokens on the same side
 
 Phase 4:
-- switch each tokens on the same side
+- add all token with the same exponent together <- Actually ->
 
 Phase 5:
 - Select the resolution method

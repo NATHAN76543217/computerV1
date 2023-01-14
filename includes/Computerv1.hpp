@@ -27,12 +27,14 @@
 // DONE handle case of no X
 // DONE check complexity and select the right resolution method
 // DONE Read float numbers
+// TODO delete all allocations
 // TODO handle second degree
 // TODO add arguments
 //  - verbose
 //  - change the unknown character
 //  - display help
 
+// ANSII COLORS
 # define RESET_ANSI		"\033[0m"		
 # define BOLD_ANSI		"\033[1m"		
 # define RED_ANSI		"\033[91m"		
@@ -42,14 +44,18 @@
 # define GREEN_ANSI		"\033[92m"		
 # define DBLUE_ANSI		"\033[94m"	
 
+
+// Utils 
+double my_abs(double nb);
+double my_sqrt(double nb);
+
 class Computerv1
 {
 
 	public:
 		static const uint	degree_max;
 
-		Computerv1( const char *str );
-		Computerv1( Computerv1 const & src );
+		Computerv1( const char *str, bool verbose = false, char unknown = 'X' );
 		~Computerv1();
 
 		bool			trim( void );
@@ -92,6 +98,5 @@ class Computerv1
 
 };
 
-// std::ostream &			operator<<( std::ostream & o, Computerv1 const & i );
 
 #endif /* ****************************************************** COMPUTERV1_H */

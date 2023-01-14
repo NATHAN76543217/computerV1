@@ -7,18 +7,11 @@ const uint				Computerv1::degree_max = 2;
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-Computerv1::Computerv1( const char *str ) : input(str), opt_verbose(false), opt_char('X')
+Computerv1::Computerv1( const char *str, bool verbose, char unknown ) : input(str), opt_verbose(verbose), opt_char(unknown)
 {
 	this->input_saved = this->input;
-	std::cout << "Original: " << this->input_saved << std::endl;; 
+	std::cout << BOLD_ANSI << "Original: " << RESET_ANSI << this->input_saved << std::endl;; 
 }
-
-Computerv1::Computerv1( const Computerv1 & src ) : input(src.input), opt_verbose(src.opt_verbose), opt_char(src.opt_char)
-{
-	this->input_saved = this->input;
-
-}
-
 
 /*
 ** -------------------------------- DESTRUCTOR --------------------------------
@@ -43,12 +36,6 @@ Computerv1 &				Computerv1::operator=( Computerv1 const & rhs )
 	}
 	return *this;
 }
-
-// std::ostream &			operator<<( std::ostream & o, Computerv1 const & i )
-// {
-// 	//o << "Value = " << i.getValue();
-// 	return o;
-// }
 
 
 /*
@@ -135,12 +122,12 @@ void			Computerv1::swapSides( void )
 }
 
 /*
-// Remove all whitespaces in the input
+** Remove all whitespaces in the input
 */
 bool			Computerv1::trim( void )
 {
 	this->input.erase(remove_if(this->input.begin(), this->input.end(), isspace), this->input.end());
-	std::cout << "Trimed: " << this->input << std::endl;
+	std::cout << BOLD_ANSI << "Trimed: " << RESET_ANSI << this->input << std::endl;
 	return true;
 }
 
@@ -155,16 +142,15 @@ bool			Computerv1::tokeniseSides( void )
 
 Nomos*			Computerv1::extractX( std::string & input )
 {
-	double value = 1;
-	ssize_t exp = 0;
-	size_t offset = 0;
+	double	value = 1;
+	ssize_t	exp = 0;
+	size_t	offset = 0;
+
 	if (input.size() == 0)
 		return nullptr;
 	
 	if (input[0] == '+')
-	{
 		input.erase(input.begin());
-	}
 	
 	if ( input[0] == '-')
 	{
@@ -174,11 +160,11 @@ Nomos*			Computerv1::extractX( std::string & input )
 
 	if (input[0] != this->opt_char)
 	{ 
-		std::cerr << "RM Invalid character: number(X) expected (get '" << input[0] << "')" << std::endl;
+		// std::cerr << "RM Invalid character: number(X) expected (get '" << input[0] << "')" << std::endl;
 		return nullptr;
 	}
 
-	std::cout << "-followed by a X ";
+	std::cout << "- followed by a X ";
 	input.erase(input.begin() + offset); // Erase X
 	if (input[0] != '^')
 	{
@@ -221,10 +207,11 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 	std::string::iterator it = input.begin();
 	while (input.length() != 0)
 	{
-		std::cout << "To process left = (" << input << ") len = " << input.length() << std::endl;
+		if (this->opt_verbose)
+			std::cout << "Left to process: \"" << input << "\"" << std::endl;
+		it = input.begin();
 		try {
 			// read a whole number
-			it = input.begin();
 			nomos = new Nomos(std::stod(input, &pos));
 		}
 		catch (std::invalid_argument & e)
@@ -233,7 +220,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 			nomos = this->extractX(input);
 			if (nomos == nullptr)
 			{
-				std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near ..." << input << ")." << RESET_ANSI << std::endl;
+				std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
 				return false;
 			}
 			std::cout << "----------" << std::endl;
@@ -245,15 +232,17 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 		std::cout << "TOK = " << *nomos << std::endl;
 		// check next char
 		char oper = input[pos];
-		std::cout << " followed by oper = '" << oper << "'" << std::endl;
+		std::cout << "OPER = '" << oper << "'" << std::endl;
 		if (oper == '+' || oper == '-' || oper == '\0')
 		{
 			// next token
 			std::cout << "----------" << std::endl;
 			if (oper == '+')
 				input.erase(it, it + pos + 1);
-			else
+			else if (oper == '-' && input[pos + 1] == '-')
 				input.erase(it, it + pos + 1);
+			else
+				input.erase(it, it + pos);
 			queue.push_back(*nomos);
 			delete nomos;
 			continue;
@@ -272,10 +261,15 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 				{
 					// next after * is X
 					nomos2 = this->extractX(input);
+					if (nomos == nullptr)
+					{
+						std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
+						return false;
+					}
 					pos = 0;
 				}
 
-				std::cout << "TOK after [*/] = " << *nomos2 << std::endl;
+				std::cout << "TOK " << oper << *nomos2 << std::endl;
 				if (oper == '*')
 				{
 					std::cout << (*nomos) << " * " << (*nomos2) << " = " << *nomos * *nomos2 << std::endl;
@@ -300,14 +294,14 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 				
 			}
 			std::cout << "----------" << std::endl;
-			input.erase(it, it + pos + 1);
+			input.erase(it, it + pos);
 			queue.push_back(*nomos);
 			delete nomos;
 			continue;
 		}
 		else
 		{
-			std::cerr << "Invalid operand after number. '" << oper << "' at " << pos + 1 << "" << std::endl;
+			std::cerr << RED_ANSI << "Invalid Syntax: Bad character after number. '" << oper << "' at " << pos + 1 << "" << std::endl;
 			return false;		
 		}
 	}
@@ -322,20 +316,20 @@ bool			Computerv1::splitSides( void )
 	first = this->input.find_first_of('=');
 	if (first == std::string::npos)
 	{
-		std::cerr << "Invalid Syntax: No Equal Sign (=) Found" << std::endl;
+		std::cerr << RED_ANSI << "Invalid Syntax: No Equal Sign (=) Found" << RESET_ANSI << std::endl;
 		return false;
 	}
 	last = this->input.find_last_of('=');
 	if (last != first)
 	{
-		std::cerr << "Invalid Syntax: Too Many Equal Sign (=) Found" << std::endl;
+		std::cerr << RED_ANSI << "Invalid Syntax: Too Many Equal Sign (=) Found" << RESET_ANSI << std::endl;
 		return false;
 	}
 	equal_pos = last;
 	this->input_left = this->input.substr(0, equal_pos);
 	this->input_right = this->input.substr(equal_pos + 1);
-	std::cout << "Left  string: " << this->input_left << std::endl;
-	std::cout << "Right string: " << this->input_right << std::endl;
+	std::cout << BOLD_ANSI << " Left string: " << RESET_ANSI << this->input_left << std::endl;
+	std::cout << BOLD_ANSI << "Right string: " << RESET_ANSI << this->input_right << std::endl;
 	return true;
 }
 
@@ -346,6 +340,8 @@ bool			Computerv1::resolve( void )
 {
 	double A = 0;
 	double B = 0;
+	double C = 0;
+	double delta = 0;
 	double result = 0;
 	switch (this->degree)
 	{
@@ -363,20 +359,42 @@ bool			Computerv1::resolve( void )
 			break;
 		case 1:
 			// distinguish X in A*X^0 + B*X^1 = 0
-			// = -A / B
-			A = this->getDegreeLeftX(0).getValue();
-			B = this->getDegreeLeftX(1).getValue();
-			if (B == 0)
+			// X = -B / A
+			A = this->getDegreeLeftX(1).getValue();
+			B = this->getDegreeLeftX(0).getValue();
+			if (A == 0)
 			{
 				std::cerr << "This equation imply a division by 0 and so have no resolution." << std::endl;
 				break;
 			}
-			result = -A / B;
-			std::cout << "X = " << result << std::endl;
+			result = -B / A;
+			std::cout << "-> X = (-B / A) = " << -B << " / " << A << " = " << result << std::endl;
 
 			break;
 		case 2:
 			// compute disciminant
+			A = this->getDegreeLeftX(2).getValue();
+			B = this->getDegreeLeftX(1).getValue();
+			C = this->getDegreeLeftX(0).getValue();
+			delta = (B * B) - (4 * A * C);
+			std::cout << "Discriminant: " << delta << std::endl;
+			if (delta < 0)
+			{
+				std::cout << "Delta is strictly negative. This equation have no solution." << std::endl;
+			}
+			else if (delta == 0)
+			{
+				std::cout << "Delta is null. This equation have 1 solution: " << std::endl;
+				std::cout << "-> " << this->opt_char << " = " << (- B / (2 * A)) << std::endl;
+			
+			}
+			else
+			{
+				// two solutions
+				std::cout << "Delta is strictly positive. This equation have 2 solutions: " << std::endl;
+				std::cout << "-> " << this->opt_char << " = " << ((- B - my_sqrt(delta) ) / (2 * A)) << std::endl;
+				std::cout << "-> " << this->opt_char << " = " << ((- B + my_sqrt(delta) ) / (2 * A)) << std::endl;
+			}
 			break;
 	}
 	return true;

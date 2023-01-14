@@ -1,17 +1,25 @@
 # include "Computerv1.hpp"
 
-int		parsing_arguments(int ac, char **av, Computerv1 *com);
+
+typedef struct opt
+{
+	bool verbose;
+	char unknown;
+}	opt;
+
+int		parsing_arguments(int ac, char **av, opt *com);
 
 int main(int ac, char **av)
 {
-	if (ac != 2)
-	{
-		dprintf(STDERR_FILENO, "Bad number of arguments (1 argument expected but %d provided)\n", ac - 1);
+	opt opts = {0, 'X'};
+	
+	if (parsing_arguments(ac, av, &opts) == EXIT_FAILURE)
 		return EXIT_FAILURE;
-	}
+
+	std::cout << "verbose: " << std::boolalpha << opts.verbose << std::endl;
+	std::cout << "unknown sign:" << opts.unknown << std::endl;
 	std::cout << GREEN_ANSI << "--- Gathering..." << RESET_ANSI << std::endl;
-	Computerv1 com(av[1]);
-	parsing_arguments(ac, av, &com);
+	Computerv1 com(av[0], opts.verbose, opts.unknown);
 
 	std::cout << GREEN_ANSI << "--- Trim..." << RESET_ANSI << std::endl;
 	if (com.trim() == false)
@@ -24,7 +32,7 @@ int main(int ac, char **av)
 	std::cout << GREEN_ANSI << "--- Tokenize..." << RESET_ANSI << std::endl;
 	if (com.tokeniseSides() == false)
 	{
-		std::cerr << RED_ANSI << "Error while tokenizing. Aborting..." << RESET_ANSI << std::endl;
+		// std::cerr << RED_ANSI << "Error while tokenizing. Aborting..." << RESET_ANSI << std::endl;
 		return EXIT_FAILURE;
 	}
 	com.dumpSides();

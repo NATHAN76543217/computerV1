@@ -1,6 +1,12 @@
 # include "Computerv1.hpp"
 
-int		parsing_arguments(int ac, char **av, Computerv1 *com)
+typedef struct opt
+{
+	bool verbose;
+	char unknown;
+}	opt;
+
+int		parsing_arguments(int ac, char **av, opt *opts)
 {
 	char			buf1[256];
 	char			buf2[256];
@@ -17,7 +23,8 @@ int		parsing_arguments(int ac, char **av, Computerv1 *com)
         OPT_GROUP("Basic options"),
         // OPT_STRING('i', "interface", &com->opt.ifName, "Force to use a specific interface.", NULL, 0, 0),
         // OPT_GROUP("Modes:"),
-        OPT_BOOLEAN('v', "verbose", com->_getOptVerbose(), "Enable verbose mode.", NULL, 0, 0),
+        OPT_BOOLEAN('v', "verbose", &(opts->verbose), "Enable verbose mode.", NULL, 0, 0),
+        OPT_BOOLEAN('c', "char", &(opts->unknown), "Set a different character for unknowns (default: X).", NULL, 0, 0),
         // OPT_BOOLEAN('r', "reverse", &malc->opt.reverse, "Bidirectional spoof (Man-in-the-middle).", NULL, 0, 0),
 		//add timeout with socket option SO_RCVTIMEO (add option -t second)
         OPT_END(),
@@ -25,7 +32,7 @@ int		parsing_arguments(int ac, char **av, Computerv1 *com)
 
     argparse_init(&argparse, options, usages, 0);
     argparse_describe(&argparse, "\nComputerV1.", "\nSolves a polynomial second or lower degree equation.");
-    ac = argparse_parse(&argparse, ac, (const char**)av);
+	ac = argparse_parse(&argparse, ac, (const char**)av);
 	if (ac != 1)
 	{
 		argparse_usage(&argparse);
