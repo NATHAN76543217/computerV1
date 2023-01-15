@@ -5,12 +5,13 @@
 */
 
 
-Nomos::Nomos(double value, size_t exponent) : _value(value), _exponent(exponent)
+Nomos::Nomos(char unknown, double value, size_t exponent) : _char(unknown), _value(value), _exponent(exponent)
 {
 }
 
 
-Nomos::Nomos( const Nomos & src ) : _value(src.getValue()), _exponent(src.getExponent())
+
+Nomos::Nomos( const Nomos & src ) : _char(src._char), _value(src.getValue()), _exponent(src.getExponent())
 {
 }
 
@@ -41,7 +42,7 @@ Nomos &				Nomos::operator=( Nomos const & rhs )
 
 Nomos 				Nomos::operator+( Nomos const & rhs ) const
 {
-	Nomos nm;
+	Nomos nm(this->_char);
 	if (this->_exponent != rhs._exponent)
 		throw std::exception();
 	nm._value = this->_value + rhs._value;
@@ -58,7 +59,7 @@ Nomos &				Nomos::operator+=( Nomos const & rhs )
 
 Nomos 				Nomos::operator-( Nomos const & rhs ) const
 {
-	Nomos nm;
+	Nomos nm(this->_char);
 	if (this->_exponent != rhs._exponent)
 		throw std::exception();
 	nm._value = this->_value - rhs._value;
@@ -76,7 +77,7 @@ Nomos &				Nomos::operator-=( Nomos const & rhs )
 
 Nomos 				Nomos::operator*( Nomos const & rhs ) const
 {
-	Nomos nm;
+	Nomos nm(this->_char);
 	nm._value = this->_value * rhs._value;
 	nm._exponent = this->_exponent + rhs._exponent;
 
@@ -93,7 +94,7 @@ Nomos &				Nomos::operator*=( Nomos const & rhs )
 
 Nomos 				Nomos::operator/( Nomos const & rhs ) const
 {
-	Nomos nm;
+	Nomos nm(this->_char);
 	nm._value = this->_value / rhs._value;
 	nm._exponent = std::abs((long long)(this->_exponent - rhs._exponent));
 
@@ -110,7 +111,7 @@ Nomos &				Nomos::operator/=( Nomos const & rhs )
 
 std::ostream &			operator<<( std::ostream & o, Nomos const & i )
 {
-	o << "(" << i.getValue() << " * X^" << i.getExponent() << ")";
+	o << "(" << i.getValue() << " * " << i.getUnknownChar() << "^" << i.getExponent() << ")";
 	return o;
 }
 
@@ -137,6 +138,12 @@ void				Nomos::switchSign( void )
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
+
+char				Nomos::getUnknownChar( void ) const
+{
+	return this->_char;
+}
+
 
 std::string			Nomos::getRawStr( char unknown ) const
 {

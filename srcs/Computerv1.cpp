@@ -10,7 +10,7 @@ const uint				Computerv1::degree_max = 2;
 Computerv1::Computerv1( const char *str, bool verbose, char unknown ) : input(str), opt_verbose(verbose), opt_char(unknown)
 {
 	this->input_saved = this->input;
-	std::cout << BOLD_ANSI << "Original: " << RESET_ANSI << this->input_saved << std::endl;; 
+	std::cout << BOLD_ANSI << "Original: \"" << RESET_ANSI << BLUE_ANSI << this->input_saved << RESET_ANSI << "\"" <<std::endl;; 
 }
 
 /*
@@ -65,19 +65,64 @@ void 			Computerv1::dumpSides( void ) const
 void			Computerv1::reduceLeftSide()
 {
 	std::vector<Nomos> reducedSide;
+	std::vector<Nomos>::iterator it = this->leftside.begin();
+	std::vector<Nomos>::iterator itend = this->leftside.end();
 
+	//Reduce elements up to max_degree 
+	if (this->leftside.size() == 0)
+		return ;
 	for (uint i = 0; i <= Computerv1::degree_max ; i++)
 	{
-		Nomos nm(0, i);
-		for (std::vector<Nomos>::iterator it = this->leftside.begin(); it != this->leftside.end(); it++)
+		Nomos nm(this->opt_char, 0, i);
+		it = this->leftside.begin();
+		itend = this->leftside.end();
+		while (it != itend)
 		{
-			if (it->getExponent() == i)
+			if (it->getExponent() != i)
+				it++;
+			else
+			{
 				nm += *it;
+				this->leftside.erase(it);
+				it = this->leftside.begin();
+				itend = this->leftside.end();
+			}
 		}
 		if (nm.getValue() != 0)
 		{
 			reducedSide.push_back(nm);
 			this->degree = i;
+		}
+	}
+
+	//Reduce elements of a different degree 
+
+	while (this->leftside.size() != 0)
+	{
+		it = this->leftside.begin();
+		itend = this->leftside.end();
+		Nomos nm(*it);
+		this->leftside.erase(it);
+		it++;
+		it = this->leftside.begin();
+		itend = this->leftside.end();
+		while (it != itend)
+		{
+			if (it->getExponent() == nm.getExponent())
+			{
+				nm += *it;
+				this->leftside.erase(it);
+				it = this->leftside.begin();
+				itend = this->leftside.end();
+			}
+			else
+				it++;
+		}
+		if (nm.getValue() != 0)
+		{
+			if (nm.getExponent() > this->degree)
+				this->degree = nm.getExponent();
+			reducedSide.push_back(nm);
 		}
 	}
 	this->leftside = reducedSide;
@@ -86,12 +131,12 @@ void			Computerv1::reduceLeftSide()
 
 bool			Computerv1::interpretation( void )
 {
-	
 	if (this->rightside.size() != 0)
 	{
 		std::cerr << "Error: the right side isn't empty at the interpretation phase" << std::endl;
 		return false;
 	}
+	
 	if (this->leftside.size() == 0)
 		this->reduced_form = "0";
 	else
@@ -104,8 +149,13 @@ bool			Computerv1::interpretation( void )
 		}
 	}
 	this->reduced_form += " = 0";
-	std::cout << "Reduced form: " << this->reduced_form << std::endl;
-	std::cout << "Polynomial degree: " << this->degree << std::endl;
+	std::cout << "Reduced form: " << BLUE_ANSI << this->reduced_form << RESET_ANSI << std::endl;
+	std::cout << "Polynomial degree: " << BLUE_ANSI << this->degree << RESET_ANSI << std::endl;
+	if (this->degree > Computerv1::degree_max || this->degree < 0)
+	{
+		std::cerr << RED_ANSI << "Error: This is an equation of degree " << RESET_ANSI << this->degree << RED_ANSI << ". We can't resolve this. Aborting..." << RESET_ANSI << std::endl;
+		return false;
+	}
 	return true;
 }
 
@@ -128,16 +178,19 @@ bool			Computerv1::trim( void )
 {
 	this->input.erase(remove_if(this->input.begin(), this->input.end(), isspace), this->input.end());
 	if (this->getOptVerbose())
-		std::cout << BOLD_ANSI << "Trimed: " << RESET_ANSI << this->input << std::endl;
+		std::cout << BOLD_ANSI << "Trimed: \"" << RESET_ANSI << BLUE_ANSI << this->input << RESET_ANSI << std::endl;
 	return true;
 }
 
 bool			Computerv1::tokeniseSides( void )
 {
-	std::cout << " - Left Side - "<< std::endl;
+	if (this->opt_verbose)
+		std::cout << " - Left Side - "<< std::endl;
 	if (this->tokeniseASide(this->input_left, this->leftside) == false)
 		return false;
-	std::cout << " - Right Side - "<< std::endl;
+	
+	if (this->opt_verbose)
+		std::cout << " - Right Side - "<< std::endl;
 	if (this->tokeniseASide(this->input_right, this->rightside) == false)
 		return false;
 	return true;
@@ -192,7 +245,7 @@ Nomos*			Computerv1::extractX( std::string & input )
 			return nullptr;
 		}			
 	}
-	Nomos* nomos =	new Nomos(value, exp);
+	Nomos* nomos =	new Nomos(this->opt_char, value, exp);
 	if (this->getOptVerbose())
 		std::cout << "Xtracted: " << (*nomos)  << std::endl;
 	return nomos;
@@ -203,6 +256,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 	size_t oper_pos	= 0;
 	Nomos* nomos	= nullptr;
 	Nomos* nomos2	= nullptr;
+	char oper = ' ';
 	std::string::iterator it = input.begin();
 	while (input.length() != 0)
 	{
@@ -211,25 +265,22 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 		it = input.begin();
 		try {
 			// read a whole number
-			nomos = new Nomos(std::stod(input, &oper_pos));
+			nomos = new Nomos(this->opt_char, std::stod(input, &oper_pos));
 		}
 		catch (std::invalid_argument & e)
 		{
 			// X next to start or preceded by a + or - 
+			// oper = input[0];
 			nomos = this->extractX(input);
 			if (nomos == nullptr)
 			{
-				std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
+				std::cerr << RED_ANSI << "-Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
 				return false;
 			}
 			if (this->getOptVerbose())
 				std::cout << "----------" << std::endl;
-			queue.push_back(*nomos);
-			// this
-			// std::cout << "LEFT: " << input << std::endl;
-			continue;
 		}
-		char oper = input[oper_pos];
+		oper = input[oper_pos];
 		// check next char
 		if (this->getOptVerbose())
 		{
@@ -251,7 +302,12 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 			delete nomos;
 			continue;
 		}
-		else if (oper == '*' || oper == '/')
+		else if (oper != '*' && oper != '/')
+		{
+			std::cerr << RED_ANSI << "Invalid Syntax: Bad character after number. '" << oper << "' at " << oper_pos + 1 << "" << std::endl;
+			return false;		
+		}
+		else
 		{
 			// after number its a * or /
 			while ((oper == '*' || oper == '/') && input.length() != 0)
@@ -259,7 +315,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 				input.erase(it, it + oper_pos + 1);
 				try {
 					//after * is a number
-					nomos2 = new Nomos(std::stod(input, &oper_pos));
+					nomos2 = new Nomos(this->opt_char, std::stod(input, &oper_pos));
 				}
 				catch (std::invalid_argument & e)
 				{
@@ -267,6 +323,8 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 					nomos2 = this->extractX(input);
 					if (nomos == nullptr)
 					{
+						delete nomos;
+						delete nomos2;
 						std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
 						return false;
 					}
@@ -307,11 +365,6 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 			delete nomos;
 			continue;
 		}
-		else
-		{
-			std::cerr << RED_ANSI << "Invalid Syntax: Bad character after number. '" << oper << "' at " << oper_pos + 1 << "" << std::endl;
-			return false;		
-		}
 	}
 	return true;
 }
@@ -336,8 +389,18 @@ bool			Computerv1::splitSides( void )
 	equal_pos = last;
 	this->input_left = this->input.substr(0, equal_pos);
 	this->input_right = this->input.substr(equal_pos + 1);
-	std::cout << BOLD_ANSI << " Left string: " << RESET_ANSI << this->input_left << std::endl;
-	std::cout << BOLD_ANSI << "Right string: " << RESET_ANSI << this->input_right << std::endl;
+	std::cout << BOLD_ANSI << " Left string: \"" << RESET_ANSI << BLUE_ANSI << this->input_left << RESET_ANSI << "\"" << std::endl;
+	std::cout << BOLD_ANSI << "Right string: \"" << RESET_ANSI << BLUE_ANSI << this->input_right << RESET_ANSI << "\"" << std::endl;
+	if (this->input_left.empty())
+	{
+		std::cerr << RED_ANSI << "invalid Syntax: Left side is empty." << RESET_ANSI << std::endl;
+		return false;
+	}
+	if (this->input_right.empty())
+	{
+		std::cerr << RED_ANSI << "invalid Syntax: Right side is empty." << RESET_ANSI << std::endl;
+		return false;
+	}
 	return true;
 }
 
@@ -358,12 +421,12 @@ bool			Computerv1::resolve( void )
 			// Only numbers
 			if (this->leftside.empty())
 			{
-				std::cout << "This equation is correct (" << this->input_saved << ")." << std::endl;
+				std::cout << YELLOW_ANSI << "-> This equation is valid (" << this->input_saved << ")." << RESET_ANSI << std::endl;
 			}
 			else
 			{
 				std::cout << "RM Should be empty: "<< this->leftside[0] << std::endl; 
-				std::cout << "This equation is wrong (" << this->input_saved << ")." << std::endl;
+				std::cout << YELLOW_ANSI << "-> This equation is wrong (" << this->input_saved << ")." << RESET_ANSI << std::endl;
 			}
 			break;
 		case 1:
@@ -374,11 +437,11 @@ bool			Computerv1::resolve( void )
 			B = this->getDegreeLeftValue(0);
 			if (A == 0)
 			{
-				std::cerr << "This equation imply a division by 0 and so have no resolution." << std::endl;
+				std::cerr << RED_ANSI << "This equation imply a division by 0 and so have no resolution." << RESET_ANSI << std::endl;
 				break;
 			}
 			result = -B / A;
-			std::cout << "-> X = (-B / A) = " << -B << " / " << A << " = " << result << std::endl;
+			std::cout << YELLOW_ANSI << "-> X = (-B / A) = " << -B << " / " << A << " = " << result << RESET_ANSI << std::endl;
 
 			break;
 		case 2:
@@ -389,16 +452,16 @@ bool			Computerv1::resolve( void )
 			delta = (B * B) - (4 * A * C);
 			std::cout << "Discriminant: " << delta << std::endl;
 			if (delta < 0)
-				std::cout << "Delta is strictly negative. This equation have no solution." << std::endl;
+				std::cout << YELLOW_ANSI << "Delta is strictly negative. This equation have no solution." << RESET_ANSI << std::endl;
 			else if (delta == 0)
-				std::cout << "Delta is null. This equation have 1 solution: \n-> " \
-					<< this->opt_char << " = " << (- B / (2 * A)) << std::endl;
+				std::cout << YELLOW_ANSI << "Delta is null. This equation have 1 solution: \n-> " \
+					<< this->opt_char << " = " << (- B / (2 * A)) << RESET_ANSI << std::endl;
 			else
 			{
 				// two solutions
-				std::cout << "Delta is strictly positive. This equation have 2 solutions: \n-> " \
+				std::cout << YELLOW_ANSI << "Delta is strictly positive. This equation have 2 solutions: \n-> " \
 					<< this->opt_char << " = " << ((- B - my_sqrt(delta) ) / (2 * A)) \
-					<< "\n-> " << this->opt_char << " = " << ((- B + my_sqrt(delta) ) / (2 * A)) << std::endl;
+					<< "\n-> " << this->opt_char << " = " << ((- B + my_sqrt(delta) ) / (2 * A)) << RESET_ANSI << std::endl;
 			}
 			break;
 	}

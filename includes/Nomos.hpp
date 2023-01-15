@@ -10,7 +10,7 @@ class Nomos
 
 	public:
 
-		Nomos(double value = 0, size_t exponent = 0);
+		Nomos(char unknown = 'X', double value = 0, size_t exponent = 0 );
 		Nomos( Nomos const & src );
 		~Nomos();
 
@@ -27,6 +27,7 @@ class Nomos
 		Nomos &		operator/=( Nomos const & rhs );
 
 		std::string	getRawStr( char unknown ) const;
+		char		getUnknownChar( void ) const;
 
 		double		getValue( void ) const;
 		void		setValue( double value);
@@ -37,6 +38,7 @@ class Nomos
 		bool		isNull(void) const;
 
 	private:
+		char		_char;
 		double		_value;
 		size_t		_exponent;
 };

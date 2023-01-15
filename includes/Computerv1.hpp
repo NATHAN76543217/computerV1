@@ -16,23 +16,7 @@
 // Lib de parsing
 # include "argparse.h"
 
-// DONE get input as string
-// DONE check presence of '='
-// DONE check for whitespace between tokens
-// DONE tokens are: "[0-9] X + - * / ^ = "
-// Changed get a list of Nomos separated by a +
-// DONE reduce each sides
-// DONE forme réduite: end by ' = 0'
-// DONE handle case of equality
-// DONE handle case of no X
-// DONE check complexity and select the right resolution method
-// DONE Read float numbers
-// TODO delete all allocations
-// TODO handle second degree
-// TODO add arguments
-//  - verbose
-//  - change the unknown character
-//  - display help
+// TODO handle negative possibilities for degree 2
 
 // ANSII COLORS
 # define RESET_ANSI		"\033[0m"		
