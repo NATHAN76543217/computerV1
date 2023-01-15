@@ -136,7 +136,7 @@ bool			Computerv1::interpretation( void )
 		std::cerr << "Error: the right side isn't empty at the interpretation phase" << std::endl;
 		return false;
 	}
-	
+
 	if (this->leftside.size() == 0)
 		this->reduced_form = "0";
 	else
@@ -452,16 +452,20 @@ bool			Computerv1::resolve( void )
 			delta = (B * B) - (4 * A * C);
 			std::cout << "Discriminant: " << delta << std::endl;
 			if (delta < 0)
-				std::cout << YELLOW_ANSI << "Delta is strictly negative. This equation have no solution." << RESET_ANSI << std::endl;
+				std::cout << YELLOW_ANSI << "Delta is strictly negative. This equation have 2 complex solutions: \n-> "\
+					<< this->opt_char << "1 = " << \
+					(- B / (2 * A) ) << " - " << my_sqrt(my_abs(delta)) << " * (i / " << (2 * A) \
+					<< ")\n-> " << this->opt_char << "2 = " << \
+					(- B / (2 * A) ) << " + " << my_sqrt(my_abs(delta)) << " * (i / " << (2 * A) << ")" << RESET_ANSI << std::endl;
 			else if (delta == 0)
 				std::cout << YELLOW_ANSI << "Delta is null. This equation have 1 solution: \n-> " \
-					<< this->opt_char << " = " << (- B / (2 * A)) << RESET_ANSI << std::endl;
+					<< this->opt_char << "2 = " << (- B / (2 * A)) << RESET_ANSI << std::endl;
 			else
 			{
 				// two solutions
 				std::cout << YELLOW_ANSI << "Delta is strictly positive. This equation have 2 solutions: \n-> " \
-					<< this->opt_char << " = " << ((- B - my_sqrt(delta) ) / (2 * A)) \
-					<< "\n-> " << this->opt_char << " = " << ((- B + my_sqrt(delta) ) / (2 * A)) << RESET_ANSI << std::endl;
+					<< this->opt_char << "1 = " << ((- B - my_sqrt(delta) ) / (2 * A)) \
+					<< "\n-> " << this->opt_char << "2 = " << ((- B + my_sqrt(delta) ) / (2 * A)) << RESET_ANSI << std::endl;
 			}
 			break;
 	}
