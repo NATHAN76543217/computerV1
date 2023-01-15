@@ -2,7 +2,6 @@
 
 const uint				Computerv1::degree_max = 2;
 
-
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
@@ -241,7 +240,7 @@ Nomos*			Computerv1::extractX( std::string & input )
 		catch (std::exception & e)
 		{
 			// exponant value is invalid
-			std::cerr << "Invalid exponent: valid number expected" << std::endl;
+			std::cerr << YELLOW_ANSI << "Invalid exponent: valid number expected" << RESET_ANSI << std::endl;
 			return nullptr;
 		}			
 	}
@@ -295,7 +294,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 			if (oper == '+')
 				input.erase(it, it + oper_pos + 1);
 			else if (oper == '-' && input[oper_pos + 1] == '-')
-				input.erase(it, it + oper_pos + 1);
+				input.erase(it, it + oper_pos + 2);
 			else
 				input.erase(it, it + oper_pos);
 			queue.push_back(*nomos);
@@ -304,7 +303,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 		}
 		else if (oper != '*' && oper != '/')
 		{
-			std::cerr << RED_ANSI << "Invalid Syntax: Bad character after number. '" << oper << "' at " << oper_pos + 1 << "" << std::endl;
+			std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
 			return false;		
 		}
 		else
@@ -321,7 +320,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 				{
 					// next after * is X
 					nomos2 = this->extractX(input);
-					if (nomos == nullptr)
+					if (nomos2 == nullptr)
 					{
 						delete nomos;
 						delete nomos2;
