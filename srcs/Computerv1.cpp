@@ -6,7 +6,7 @@ const uint				Computerv1::degree_max = 2;
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-Computerv1::Computerv1( const char *str, bool verbose, char unknown ) : input(str), opt_verbose(verbose), opt_char(unknown)
+Computerv1::Computerv1( const char *str, bool verbose, char unknown ) : input(str), opt_verbose(verbose), opt_char(unknown), degree(0)
 {
 	this->input_saved = this->input;
 	std::cout << BOLD_ANSI << "Original: \"" << RESET_ANSI << BLUE_ANSI << this->input_saved << RESET_ANSI << "\"" <<std::endl;; 
@@ -420,12 +420,12 @@ bool			Computerv1::resolve( void )
 			// Only numbers
 			if (this->leftside.empty())
 			{
-				std::cout << YELLOW_ANSI << "-> This equation is valid (" << this->input_saved << ")." << RESET_ANSI << std::endl;
+				std::cout << YELLOW_ANSI << "-> This equation is " << BOLD_ANSI << "valid" << RESET_ANSI << YELLOW_ANSI << " (" << this->input_saved << ")." << RESET_ANSI << std::endl;
 			}
 			else
 			{
 				std::cout << "RM Should be empty: "<< this->leftside[0] << std::endl; 
-				std::cout << YELLOW_ANSI << "-> This equation is wrong (" << this->input_saved << ")." << RESET_ANSI << std::endl;
+				std::cout << YELLOW_ANSI << "-> This equation is " << BOLD_ANSI << "wrong" << RESET_ANSI << YELLOW_ANSI << " (" << this->input_saved << ")." << RESET_ANSI << std::endl;
 			}
 			break;
 		case 1:

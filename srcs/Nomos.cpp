@@ -22,7 +22,6 @@ Nomos::Nomos( const Nomos & src ) : _char(src._char), _value(src.getValue()), _e
 
 Nomos::~Nomos()
 {
-	//destructeur pour toute les listes
 }
 
 
@@ -43,6 +42,7 @@ Nomos &				Nomos::operator=( Nomos const & rhs )
 Nomos 				Nomos::operator+( Nomos const & rhs ) const
 {
 	Nomos nm(this->_char);
+
 	if (this->_exponent != rhs._exponent)
 		throw std::exception();
 	nm._value = this->_value + rhs._value;
@@ -60,6 +60,7 @@ Nomos &				Nomos::operator+=( Nomos const & rhs )
 Nomos 				Nomos::operator-( Nomos const & rhs ) const
 {
 	Nomos nm(this->_char);
+
 	if (this->_exponent != rhs._exponent)
 		throw std::exception();
 	nm._value = this->_value - rhs._value;
