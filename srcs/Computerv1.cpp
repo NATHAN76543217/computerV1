@@ -430,7 +430,7 @@ bool			Computerv1::resolve( void )
 			break;
 		case 1:
 			// degree 1 
-			// distinguish X in A*X^0 + B*X^1 = 0
+			// distinguish X in A*X^1 + B*X^0 = 0
 			// X = -B / A
 			A = this->getDegreeLeftValue(1);
 			B = this->getDegreeLeftValue(0);
