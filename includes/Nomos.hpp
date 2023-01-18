@@ -10,6 +10,14 @@ class Nomos
 
 	public:
 
+        class NomosDegreeException : public std::exception
+        {
+            public:
+                const char  *what(void) const throw(){
+                    return "It's impossible to add or substract two Nomos with a different degree.";
+                }
+        };
+
 		Nomos(char unknown = 'X', double value = 0, size_t exponent = 0 );
 		Nomos( Nomos const & src );
 		~Nomos();

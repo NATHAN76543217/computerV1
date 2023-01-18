@@ -44,7 +44,7 @@ Nomos 				Nomos::operator+( Nomos const & rhs ) const
 	Nomos nm(this->_char);
 
 	if (this->_exponent != rhs._exponent)
-		throw std::exception();
+		throw Nomos::NomosDegreeException();
 	nm._value = this->_value + rhs._value;
 	return nm;
 }
@@ -52,7 +52,7 @@ Nomos 				Nomos::operator+( Nomos const & rhs ) const
 Nomos &				Nomos::operator+=( Nomos const & rhs )
 {
 	if (this->_exponent != rhs._exponent)
-		throw std::exception();
+		throw Nomos::NomosDegreeException();
 	this->_value += rhs._value;
 	return *this;
 }
@@ -62,7 +62,7 @@ Nomos 				Nomos::operator-( Nomos const & rhs ) const
 	Nomos nm(this->_char);
 
 	if (this->_exponent != rhs._exponent)
-		throw std::exception();
+		throw Nomos::NomosDegreeException();
 	nm._value = this->_value - rhs._value;
 	return nm;
 }
@@ -70,7 +70,7 @@ Nomos 				Nomos::operator-( Nomos const & rhs ) const
 Nomos &				Nomos::operator-=( Nomos const & rhs )
 {
 	if (this->_exponent != rhs._exponent)
-		throw std::exception();
+		throw Nomos::NomosDegreeException();
 	this->_value -= rhs._value;
 
 	return *this;
