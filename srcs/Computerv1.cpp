@@ -203,7 +203,7 @@ Nomos*			Computerv1::extractX( std::string & input )
 
 	if (input.size() == 0)
 		return nullptr;
-	
+
 	if (input[0] == '+')
 		input.erase(input.begin());
 	
@@ -271,6 +271,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 			// X next to start or preceded by a + or - 
 			// oper = input[0];
 			nomos = this->extractX(input);
+			oper_pos = 0;
 			if (nomos == nullptr)
 			{
 				std::cerr << RED_ANSI << "-Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
@@ -285,6 +286,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 		{
 			std::cout << "TOK = " << *nomos << std::endl;
 			std::cout << "OPER = '" << oper << "'" << std::endl;
+			std::cout << "Left: \"" << input << "\"" << std::endl;
 		}	
 		if (oper == '+' || oper == '-' || oper == '\0')
 		{
@@ -320,6 +322,7 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 				{
 					// next after * is X
 					nomos2 = this->extractX(input);
+					oper_pos = 0;
 					if (nomos2 == nullptr)
 					{
 						delete nomos;
@@ -327,7 +330,6 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 						std::cerr << RED_ANSI << "Syntax error: Impossible to extract the next value (near \"..." << input << "\")." << RESET_ANSI << std::endl;
 						return false;
 					}
-					oper_pos = 0;
 				}
 				if (this->getOptVerbose())
 					std::cout << "TOK " << oper << *nomos2 << std::endl;

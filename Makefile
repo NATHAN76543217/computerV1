@@ -50,7 +50,7 @@ C_LFLAG		+=	$(addprefix -L,$(addprefix $(LIB_DIR), $(LIBRARIES)))
 include fancyPrefix.mk
 
 #   Main rule
-all: display_os comp_lib check_sources check_headers $(NAME)
+all: gitinit display_os comp_lib check_sources check_headers $(NAME)
 	@echo "$(PREFIX_PROJECT)$(PREFIX_INFO) done"
 
 #	include OS detection
@@ -130,6 +130,8 @@ clean:
 
 # final clean rule
 fclean: fclean_lib clean
+	@echo "$(PREFIX_PROJECT)$(PREFIX_CLEAN) Cleaning $(LIB_DIR)/"
+	@rm -rf $(LIB_DIR)
 	@echo "$(PREFIX_PROJECT)$(PREFIX_CLEAN) Cleaning $(NAME)"
 	@rm -f $(NAME)
 
@@ -139,4 +141,6 @@ re: fclean all
 # git submodule initialisation
 
 gitinit: 
-	@echo ""
+	@mkdir -p ./lib
+	@find ./lib -maxdepth 0 -empty -type d -exec printf "$(PREFIX_PROJECT)$(PREFIX_WARN) The library directory is empty. Cloning library 'argparse' into {}" \; -exec git clone "https://github.com/NATHAN76543217/argparse.git" {}/argparse \;
+	
