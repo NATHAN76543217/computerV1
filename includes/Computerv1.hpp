@@ -16,7 +16,7 @@
 // Lib de parsing
 # include "argparse.h"
 
-// TODO handle negative possibilities for degree 2
+// TODO Readme and more tests 
 
 // ANSII COLORS
 # define RESET_ANSI		"\033[0m"		
