@@ -4,6 +4,7 @@
 #
 # Makefile for C projects
 # (OS detect)
+# Version: 2
 #
 #######################################################################
 
@@ -51,7 +52,7 @@ include fancyPrefix.mk
 
 #   Main rule
 all: gitinit display_os comp_lib check_sources check_headers $(NAME)
-	@echo "$(PREFIX_PROJECT)$(PREFIX_INFO) done"
+	@echo "$(PREFIX_INFO) done"
 
 #	include OS detection
 include detectOs.mk
@@ -63,13 +64,13 @@ check_sources:
 	error=0 ; \
 	for source in $$duplicates ; do \
 			if [ $$(echo $$source | cut -d '.' -f 1 | tr -d '\n' ) -gt 1 ] ; then \
-				echo "$(PREFIX_PROJECT)$(PREFIX_DUPL)" Duplicates source files found for \"$$(echo $$source | cut -d '.' -f2- )\" in: ; \
+				echo "$(PREFIX_DUPL)" Duplicates source files found for \"$$(echo $$source | cut -d '.' -f2- )\" in: ; \
 				find $(SRC_DIR) | grep $$(echo $$source | cut -d '.' -f 2 | tr -d '\n' ); \
 				error=1 ; \
 			fi \
 	done ; \
 	if [ $$error -eq 1 ] ; then \
-		echo "$(PREFIX_PROJECT)$(PREFIX_ERROR) Cannot manage duplicates files, aborting..." ; \
+		echo "$(PREFIX_ERROR) Cannot manage duplicates files, aborting..." ; \
 		exit 1 ; \
 	fi
 
@@ -80,59 +81,59 @@ check_headers:
 	error=0 ; \
 	for source in $$duplicates ; do \
 			if [ $$(echo $$source | cut -d '.' -f 1 | tr -d '\n' ) -gt 1 ] ; then \
-				echo "$(PREFIX_PROJECT)$(PREFIX_DUPL)" Duplicates header files found for \"$$(echo $$source | cut -d '.' -f2- )\" in: ; \
+				echo "$(PREFIX_DUPL)" Duplicates header files found for \"$$(echo $$source | cut -d '.' -f2- )\" in: ; \
 				find $(INC_DIR) | grep $$(echo $$source | cut -d '.' -f 2 | tr -d '\n' ); \
 				error=1 ; \
 			fi \
 	done ; \
 	if [ $$error -eq 1 ] ; then \
-		echo "$(PREFIX_PROJECT)$(PREFIX_ERROR) Cannot manage duplicates files, aborting..." ; \
+		echo "$(PREFIX_ERROR) Cannot manage duplicates files, aborting..." ; \
 		exit 1 ; \
 	fi
 
 #	Compilation of libraries
 comp_lib:
-	@echo "$(PREFIX_PROJECT)$(PREFIX_INFO) Compiling libraries..."
+	@echo "$(PREFIX_INFO) Compiling libraries..."
 	@for lib in $(LIBRARIES) ; do \
-		echo "$(PREFIX_PROJECT)$(PREFIX_INFO) library $$lib done."; \
+		echo "$(PREFIX_INFO) library $$lib done."; \
 		make -C $(LIB_DIR)/$$lib ; \
 	done
 
 #	Clean of libraries
 fclean_lib:
-	@echo "$(PREFIX_PROJECT)$(PREFIX_CLEAN) Cleaning libraries."
+	@echo "$(PREFIX_CLEAN) Cleaning libraries."
 	@for lib in $(LIBRARIES) ; do \
-		echo "$(PREFIX_PROJECT)$(PREFIX_CLEAN) Cleaning library $$lib"; \
+		echo "$(PREFIX_CLEAN) Cleaning library $$lib"; \
 		make -C $(LIB_DIR)/$$lib fclean; \
 	done
 
 #	Bin directory
 $(BIN_DIR):
-	@echo "$(PREFIX_PROJECT)$(PREFIX_WARN) No bin dir found. Creating one."
+	@echo "$(PREFIX_WARN) No bin dir found. Creating one."
 	@mkdir -p $(BIN_DIR)
 
 #	Linking rule
 $(NAME): $(BIN_DIR) $(OBJS)
 	@$(COMP) $(OBJS) -o $(NAME) $(CFLAGS) $(C_LFLAGS)
-	@echo "$(PREFIX_PROJECT)$(PREFIX_LINK) Linking done for: $(NAME)"
+	@echo "$(PREFIX_LINK) Linking done for: $(NAME)"
 
 
 # Compilation rule 
 $(BIN_DIR)/$(SRC_DIR)/%.o : $(SRC_DIR)/%.cpp $(HEADER_FILES)
 	@mkdir -p $(BIN_DIR)/$(shell dirname $<)
 	@$(COMP) -c $< -o $@ $(CFLAGS) $(C_IFLAGS)
-	@echo "$(PREFIX_PROJECT)$(PREFIX_COMP) Compiled: $(shell basename $<)"
+	@echo "$(PREFIX_COMP) Compiled: $(shell basename $<)"
 
 # clean rule
 clean:
-	@echo "$(PREFIX_PROJECT)$(PREFIX_CLEAN) Cleaning $(BIN_DIR)/"
+	@echo "$(PREFIX_CLEAN) Cleaning $(BIN_DIR)/"
 	@rm -rf $(BIN_DIR)
 
 # final clean rule
 fclean: fclean_lib clean
-	@echo "$(PREFIX_PROJECT)$(PREFIX_CLEAN) Cleaning $(LIB_DIR)/"
+	@echo "$(PREFIX_CLEAN) Cleaning $(LIB_DIR)/"
 	@rm -rf $(LIB_DIR)
-	@echo "$(PREFIX_PROJECT)$(PREFIX_CLEAN) Cleaning $(NAME)"
+	@echo "$(PREFIX_CLEAN) Cleaning $(NAME)"
 	@rm -f $(NAME)
 
 # remake rule
@@ -142,5 +143,5 @@ re: fclean all
 
 gitinit: 
 	@mkdir -p ./lib
-	@find ./lib -maxdepth 0 -empty -type d -exec printf "$(PREFIX_PROJECT)$(PREFIX_WARN) The library directory is empty. Cloning library 'argparse' into {}" \; -exec git clone "https://github.com/NATHAN76543217/argparse.git" {}/argparse \;
-	
+	@find ./lib -maxdepth 0 -empty -type d -exec printf "$(PREFIX_WARN) The library directory is empty. Cloning library 'argparse' into {}" \; -exec git clone "https://github.com/NATHAN76543217/argparse.git" {}/argparse \;
+

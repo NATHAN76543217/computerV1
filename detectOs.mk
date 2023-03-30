@@ -39,13 +39,13 @@ endif
 
 display_os:
 ifeq ($(OSDETECT),WIN32)
-	@echo "$(PREFIX_PROJECT)$(PREFIX_ERROR) This project cannot compile yet on windows"
+	@echo "$(PREFIX_ERROR) This project cannot compile yet on windows"
 	@exit 1
 else ifeq ($(OSDETECT), UNKNOWN)
-	@echo "$(PREFIX_PROJECT)$(PREFIX_ERROR) Cannot detect the target OS. Aborting."
+	@echo "$(PREFIX_ERROR) Cannot detect the target OS. Aborting."
 	@exit 1
 else
-	@echo "$(PREFIX_PROJECT)$(PREFIX_INFO) Compilation target: $(OSDETECT)"
+	@echo "$(PREFIX_INFO) Compilation target: $(OSDETECT)"
 endif
 
 

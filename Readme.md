@@ -1,6 +1,11 @@
 # ComputerV1
 
-Projet du cercle exterieur de l'école 42.
+Projet of external circle of the 42 school curriculum.
+
+Make a program that solve polynomial equations of degree up to 2.
+
+REVIEW: put library at 42 norm
+
 
 ## Algorithme
 
