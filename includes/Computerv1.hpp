@@ -16,8 +16,6 @@
 // Lib de parsing
 # include "argparse.h"
 
-// TODO Readme and more tests 
-
 // ANSII COLORS
 # define RESET_ANSI		"\033[0m"		
 # define BOLD_ANSI		"\033[1m"		
@@ -37,7 +35,7 @@ class Computerv1
 {
 
 	public:
-		static const uint	degree_max;
+		static const int	degree_max;
 
 		Computerv1( const char *str, bool verbose = false, char unknown = 'X' );
 		~Computerv1();
@@ -51,10 +49,12 @@ class Computerv1
 		Nomos*			extractX( std::string & input );
 
 		bool			resolve( void );
+		void			resolve2ndDegree();
+
 		bool			interpretation( void );
 		void			dumpSides( void ) const;
 
-		double			getDegreeLeftValue( size_t degree);
+		double			getDegreeLeftValue( ssize_t degree);
 
 		Computerv1 &	operator=( Computerv1 const & rhs );
 
@@ -75,7 +75,7 @@ class Computerv1
 		std::string			reduced_form;
 		bool				opt_verbose;
 		char				opt_char;
-		size_t				degree;
+		ssize_t				degree;
 		std::vector<Nomos>	leftside;
 		std::vector<Nomos>	rightside;
 

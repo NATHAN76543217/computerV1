@@ -9,13 +9,15 @@ typedef struct opt
 int		parsing_arguments(int ac, char **av, opt *opts)
 {
 	char			buf1[256];
+	char			buf2[256];
 	struct argparse	argparse;
 	const char	*const usages[] = { buf1, NULL };
 
-	if (strlen(av[0]) > 100)
-		av[0][100] = '\0';
+	if (strlen(av[0]) >= 100)
+		av[0][99] = '\0';
 
 	buf1[sprintf(buf1, "%s    [options] polynomial_equation", av[0])] = '\0';
+	buf2[sprintf(buf2, "\nSolves a polynomial second or lower degree equation.\nExample: %s -v -c=\"X\" \"3 * X^2 - 4 * X - 5 = 0\"", av[0])] = '\0';
 
 	struct argparse_option options[] = {
         OPT_HELP(),
@@ -26,7 +28,7 @@ int		parsing_arguments(int ac, char **av, opt *opts)
     };
 
     argparse_init(&argparse, options, usages, 0);
-    argparse_describe(&argparse, "\nComputerV1.", "\nSolves a polynomial second or lower degree equation.");
+    argparse_describe(&argparse, "\nComputerV1.", buf2);
 	
 	ac = argparse_parse(&argparse, ac, (const char**)av);
 	if (ac != 1)

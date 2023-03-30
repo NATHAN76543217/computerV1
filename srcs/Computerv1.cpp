@@ -1,6 +1,6 @@
 #include "Computerv1.hpp"
 
-const uint				Computerv1::degree_max = 2;
+const int				Computerv1::degree_max = 2;
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -67,7 +67,8 @@ void			Computerv1::reduceLeftSide()
 	std::vector<Nomos>::iterator it = this->leftside.begin();
 	std::vector<Nomos>::iterator itend = this->leftside.end();
 
-	//Reduce elements up to max_degree 
+	// Reduce elements up to max_degree 
+	// Merge elements of same degree
 	if (this->leftside.size() == 0)
 		return ;
 	for (uint i = 0; i <= Computerv1::degree_max ; i++)
@@ -94,14 +95,15 @@ void			Computerv1::reduceLeftSide()
 		}
 	}
 
-	//Reduce elements of a different degree 
+	//Reduce elements of a higher degree 
 
 	while (this->leftside.size() != 0)
 	{
 		it = this->leftside.begin();
 		itend = this->leftside.end();
+
 		Nomos nm(*it);
-		this->leftside.erase(it);
+		this->leftside.erase(it);//weird
 		it++;
 		it = this->leftside.begin();
 		itend = this->leftside.end();
@@ -119,8 +121,7 @@ void			Computerv1::reduceLeftSide()
 		}
 		if (nm.getValue() != 0)
 		{
-			if (nm.getExponent() > this->degree)
-				this->degree = nm.getExponent();
+			this->degree = nm.getExponent();
 			reducedSide.push_back(nm);
 		}
 	}
@@ -132,6 +133,7 @@ bool			Computerv1::interpretation( void )
 {
 	if (this->rightside.size() != 0)
 	{
+		// May be replaced by an exception
 		std::cerr << "Error: the right side isn't empty at the interpretation phase" << std::endl;
 		return false;
 	}
@@ -144,7 +146,7 @@ bool			Computerv1::interpretation( void )
 		{
 			if (it != this->leftside.begin())
 				this->reduced_form += " + ";
-			this->reduced_form.append(it->getRawStr( this->getOptChar() ));
+			this->reduced_form.append(it->getRawStr( this->getOptChar(), true));
 		}
 	}
 	this->reduced_form += " = 0";
@@ -214,10 +216,7 @@ Nomos*			Computerv1::extractX( std::string & input )
 	}
 
 	if (input[0] != this->opt_char)
-	{ 
-		// std::cerr << "RM Invalid character: number(X) expected (get '" << input[0] << "')" << std::endl;
 		return nullptr;
-	}
 
 	input.erase(input.begin() + offset); // Erase X
 	if (input[0] != '^')
@@ -286,7 +285,6 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 		{
 			std::cout << "TOK = " << *nomos << std::endl;
 			std::cout << "OPER = '" << oper << "'" << std::endl;
-			std::cout << "Left: \"" << input << "\"" << std::endl;
 		}	
 		if (oper == '+' || oper == '-' || oper == '\0')
 		{
@@ -351,7 +349,11 @@ bool			Computerv1::tokeniseASide( std::string & input, std::vector<Nomos> & queu
 					}
 					else if (this->getOptVerbose())
 						std::cout << (*nomos) << " / " << (*nomos2) << " = " << *nomos / *nomos2 << std::endl;
-					*nomos /= *nomos2;
+					// Si / par x alors alors on ajoute à getNextSide ""
+					// add a full step remove division by X
+					//ou fois x ^-1
+					nomos2->setExponent(nomos2->getExponent() * -1);
+					*nomos *= *nomos2;
 				}
 				delete (nomos2);
 				oper = input[oper_pos];
@@ -390,7 +392,7 @@ bool			Computerv1::splitSides( void )
 	equal_pos = last;
 	this->input_left = this->input.substr(0, equal_pos);
 	this->input_right = this->input.substr(equal_pos + 1);
-	std::cout << BOLD_ANSI << " Left string: \"" << RESET_ANSI << BLUE_ANSI << this->input_left << RESET_ANSI << "\"" << std::endl;
+	std::cout << BOLD_ANSI << "Left  string: \"" << RESET_ANSI << BLUE_ANSI << this->input_left << RESET_ANSI << "\"" << std::endl;
 	std::cout << BOLD_ANSI << "Right string: \"" << RESET_ANSI << BLUE_ANSI << this->input_right << RESET_ANSI << "\"" << std::endl;
 	if (this->input_left.empty())
 	{
@@ -412,65 +414,71 @@ bool			Computerv1::resolve( void )
 {
 	double A = 0;
 	double B = 0;
-	double C = 0;
-	double delta = 0;
-	double result = 0;
+
 	switch (this->degree)
 	{
 		case 0:
 			// degree 0 
 			// Only numbers
 			if (this->leftside.empty())
-			{
-				std::cout << YELLOW_ANSI << "-> This equation is " << BOLD_ANSI << "valid" << RESET_ANSI << YELLOW_ANSI << " (" << this->input_saved << ")." << RESET_ANSI << std::endl;
-			}
+				std::cout << YELLOW_ANSI << "-> This equation is " << BOLD_ANSI << "valid for any real number" << RESET_ANSI << YELLOW_ANSI << " (" << this->input_saved << ")." << RESET_ANSI << std::endl;
 			else
-			{
-				std::cout << "RM Should be empty: "<< this->leftside[0] << std::endl; 
-				std::cout << YELLOW_ANSI << "-> This equation is " << BOLD_ANSI << "wrong" << RESET_ANSI << YELLOW_ANSI << " (" << this->input_saved << ")." << RESET_ANSI << std::endl;
-			}
+				std::cout << YELLOW_ANSI << "-> This equation is " << BOLD_ANSI << "invalid for any real number" << RESET_ANSI << YELLOW_ANSI << " (" << this->input_saved << ")." << RESET_ANSI << std::endl;
 			break;
 		case 1:
 			// degree 1 
-			// distinguish X in A*X^1 + B*X^0 = 0
-			// X = -B / A
+			// distinguish X in polynomial of form: A*X^1 + B*X^0 = 0
+			// Discriminent formula: D = -B / A
 			A = this->getDegreeLeftValue(1);
 			B = this->getDegreeLeftValue(0);
 			if (A == 0)
 			{
 				std::cerr << RED_ANSI << "This equation imply a division by 0 and so have no resolution." << RESET_ANSI << std::endl;
+				// std::cerr << RED_ANSI << "This equation imply a division by 0 and so have no resolution. (Software error, please report this: not supposed to happended)" << RESET_ANSI << std::endl;
 				break;
 			}
-			result = -B / A;
-			std::cout << YELLOW_ANSI << "-> X = (-B / A) = " << -B << " / " << A << " = " << result << RESET_ANSI << std::endl;
+			std::cout << YELLOW_ANSI << "-> X = (-B / A) = " << -B << " / " << A << RESET_ANSI << std::endl;
+			std::cout << YELLOW_ANSI << "-> X = " << (-B / A) << RESET_ANSI << std::endl;
 
 			break;
 		case 2:
-			// degree 2 
-			A = this->getDegreeLeftValue(2);
-			B = this->getDegreeLeftValue(1);
-			C = this->getDegreeLeftValue(0);
-			delta = (B * B) - (4 * A * C);
-			std::cout << "Discriminant: " << delta << std::endl;
-			if (delta < 0)
-				std::cout << YELLOW_ANSI << "Delta is strictly negative. This equation have 2 complex solutions: \n-> "\
-					<< this->opt_char << "1 = " << \
-					(- B / (2 * A) ) << " - " << my_sqrt(my_abs(delta)) << " * (i / " << (2 * A) \
-					<< ")\n-> " << this->opt_char << "2 = " << \
-					(- B / (2 * A) ) << " + " << my_sqrt(my_abs(delta)) << " * (i / " << (2 * A) << ")" << RESET_ANSI << std::endl;
-			else if (delta == 0)
-				std::cout << YELLOW_ANSI << "Delta is null. This equation have 1 solution: \n-> " \
-					<< this->opt_char << "2 = " << (- B / (2 * A)) << RESET_ANSI << std::endl;
-			else
-			{
-				// two solutions
-				std::cout << YELLOW_ANSI << "Delta is strictly positive. This equation have 2 solutions: \n-> " \
-					<< this->opt_char << "1 = " << ((- B - my_sqrt(delta) ) / (2 * A)) \
-					<< "\n-> " << this->opt_char << "2 = " << ((- B + my_sqrt(delta) ) / (2 * A)) << RESET_ANSI << std::endl;
-			}
+			resolve2ndDegree();
 			break;
 	}
 	return true;
+}
+
+void			Computerv1::resolve2ndDegree()
+{
+	// degree 2 
+	// distinguish X in polynomial of form: A*X^2 + B*X^1 + C*X^0 = 0
+	// Discriminent formula: D = B^2 - 4*A*C
+	double A = this->getDegreeLeftValue(2);
+	double B = this->getDegreeLeftValue(1);
+	double C = this->getDegreeLeftValue(0);
+
+	double delta = (B * B) - (4 * A * C);
+	std::cout << "Discriminant: B^2 - 4*A*C = " << delta << std::endl;
+	
+	if (delta < 0)
+	{
+		std::cout << YELLOW_ANSI << "Delta is strictly negative. This equation have 2 complex solutions: \n" \
+		<< "-> " << this->opt_char << "1 = " << RESET_ANSI << "(-b/2a) - (sqrt(Delta) / (2*a))i = " << YELLOW_ANSI << \
+			(- B / (2 * A) ) << " - " << my_sqrt(my_abs(delta)) / (2 * A) << "i\n" << YELLOW_ANSI \
+		<< "-> " << this->opt_char << "2 = " << RESET_ANSI << "(-b/2a) + (sqrt(Delta) / (2*a))i = " << YELLOW_ANSI << \
+			(- B / (2 * A) ) << " + " << my_sqrt(my_abs(delta)) / (2 * A) << "i" << RESET_ANSI << std::endl;
+	}
+	else if (delta == 0)
+	{
+		std::cout << YELLOW_ANSI << "Delta is null. This equation have 1 solution: \n" \
+		<< "-> " << this->opt_char << "2 = " << (- B / (2 * A)) << RESET_ANSI << std::endl;
+	}
+	else
+	{
+		std::cout << YELLOW_ANSI << "Delta is strictly positive. This equation have 2 solutions: \n" \
+		<< "-> " << this->opt_char << "1 = " << ((- B - my_sqrt(delta) ) / (2 * A)) << "\n" \
+		<< "-> " << this->opt_char << "2 = " << ((- B + my_sqrt(delta) ) / (2 * A)) << RESET_ANSI << std::endl;
+	}
 }
 
 /*
@@ -481,7 +489,7 @@ bool			Computerv1::resolve( void )
 /*
 ** Return the first occurence of a Nomos of the specified 'degree' 
 */
-double			Computerv1::getDegreeLeftValue( size_t degree)
+double			Computerv1::getDegreeLeftValue( ssize_t degree)
 {
 	std::vector<Nomos>::iterator it = this->leftside.begin();
 	for (; it != this->leftside.end(); it++)

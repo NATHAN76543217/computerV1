@@ -18,7 +18,7 @@ class Nomos
                 }
         };
 
-		Nomos(char unknown = 'X', double value = 0, size_t exponent = 0 );
+		Nomos(char unknown = 'X', double value = 0, ssize_t exponent = 0 );
 		Nomos( Nomos const & src );
 		~Nomos();
 
@@ -34,21 +34,21 @@ class Nomos
 		Nomos &		operator*=( Nomos const & rhs );
 		Nomos &		operator/=( Nomos const & rhs );
 
-		std::string	getRawStr( char unknown ) const;
+		std::string	getRawStr( char unknown, bool minimal = false) const;
 		char		getUnknownChar( void ) const;
 
 		double		getValue( void ) const;
 		void		setValue( double value);
 		void		addValue(double n);
-		size_t		getExponent( void ) const;
-		void		setExponent( size_t exponent );
+		ssize_t		getExponent( void ) const;
+		void		setExponent( ssize_t exponent );
 		void		switchSign( void );
 		bool		isNull(void) const;
 
 	private:
 		char		_char;
 		double		_value;
-		size_t		_exponent;
+		ssize_t		_exponent;
 };
 
 std::ostream &			operator<<( std::ostream & o, Nomos const & i );

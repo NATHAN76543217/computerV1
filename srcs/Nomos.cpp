@@ -5,7 +5,7 @@
 */
 
 
-Nomos::Nomos(char unknown, double value, size_t exponent) : _char(unknown), _value(value), _exponent(exponent)
+Nomos::Nomos(char unknown, double value, ssize_t exponent) : _char(unknown), _value(value), _exponent(exponent)
 {
 }
 
@@ -97,7 +97,8 @@ Nomos 				Nomos::operator/( Nomos const & rhs ) const
 {
 	Nomos nm(this->_char);
 	nm._value = this->_value / rhs._value;
-	nm._exponent = std::abs((long long)(this->_exponent - rhs._exponent));
+	// nm._exponent = std::abs((long long)(this->_exponent - rhs._exponent));
+	nm._exponent = (this->_exponent - rhs._exponent);
 
 	return nm;
 }
@@ -105,7 +106,8 @@ Nomos 				Nomos::operator/( Nomos const & rhs ) const
 Nomos &				Nomos::operator/=( Nomos const & rhs )
 {
 	this->_value /= rhs._value;
-	this->_exponent = std::abs((long long)(this->_exponent - rhs._exponent));
+// /	this->_exponent = std::abs((long long)(this->_exponent - rhs._exponent));
+	this->_exponent -= rhs._exponent;
 
 	return *this;
 }
@@ -146,10 +148,15 @@ char				Nomos::getUnknownChar( void ) const
 }
 
 
-std::string			Nomos::getRawStr( char unknown ) const
+std::string			Nomos::getRawStr( char unknown, bool minimal ) const
 {
 	std::stringstream ss;
-	ss << this->_value << " * " << unknown << "^" << this->_exponent;
+	if (minimal && this->_exponent == 0)
+		ss << this->_value;
+	else if (minimal && this->_exponent == 1)
+		ss << this->_value << " * " << unknown;
+	else
+		ss << this->_value << " * " << unknown << "^" << this->_exponent;
 	return ss.str();
 }
 
@@ -163,12 +170,12 @@ void				Nomos::setValue( double value )
 	this->_value = value;
 }
 
-size_t				Nomos::getExponent( void ) const
+ssize_t				Nomos::getExponent( void ) const
 {
 	return this->_exponent;
 }
 
-void				Nomos::setExponent( size_t exponent)
+void				Nomos::setExponent( ssize_t exponent)
 {
 	this->_exponent = exponent;
 }
