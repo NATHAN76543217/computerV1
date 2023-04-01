@@ -96,9 +96,8 @@ Nomos &				Nomos::operator*=( Nomos const & rhs )
 Nomos 				Nomos::operator/( Nomos const & rhs ) const
 {
 	Nomos nm(this->_char);
-	nm._value = this->_value / rhs._value;
-	// nm._exponent = std::abs((long long)(this->_exponent - rhs._exponent));
-	nm._exponent = (this->_exponent - rhs._exponent);
+	nm._value = (double)(this->_value / rhs._value);
+	nm._exponent = this->_exponent - rhs._exponent;
 
 	return nm;
 }
@@ -106,7 +105,6 @@ Nomos 				Nomos::operator/( Nomos const & rhs ) const
 Nomos &				Nomos::operator/=( Nomos const & rhs )
 {
 	this->_value /= rhs._value;
-// /	this->_exponent = std::abs((long long)(this->_exponent - rhs._exponent));
 	this->_exponent -= rhs._exponent;
 
 	return *this;
@@ -114,7 +112,10 @@ Nomos &				Nomos::operator/=( Nomos const & rhs )
 
 std::ostream &			operator<<( std::ostream & o, Nomos const & i )
 {
-	o << "(" << i.getValue() << " * " << i.getUnknownChar() << "^" << i.getExponent() << ")";
+	std::stringstream ss;
+
+	ss << "(" << i.getValue() << " * " << i.getUnknownChar() << "^" << i.getExponent() << ")";
+	o << ss.str();
 	return o;
 }
 

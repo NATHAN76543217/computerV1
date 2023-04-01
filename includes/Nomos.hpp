@@ -2,6 +2,7 @@
 # define NOMOS_HPP
 
 # include <iostream>
+# include <iomanip>
 # include <string>
 # include <sstream>
 

@@ -18,9 +18,10 @@ int main(int ac, char **av)
 	if (opts.unknown == NULL)
 		opts.unknown = defaultunknownChar.c_str();
 
-	std::cout << GREEN_ANSI << "--- Gathering..." << RESET_ANSI << std::endl;
-	std::cout << "verbose: " << std::boolalpha << opts.verbose << std::endl;
-	std::cout << "unknown sign:" << opts.unknown[0] << std::endl;
+	std::cout << GREEN_ANSI << "--- Options gathering..." << RESET_ANSI << std::endl;
+	std::cout << "- verbose: '" << std::boolalpha << opts.verbose << "'" << std::endl;
+	std::cout << "- unknown's sign: '" << opts.unknown[0] << "'" << std::endl;
+	
 	Computerv1 com(av[0], opts.verbose, opts.unknown[0]);
 
 	std::cout << GREEN_ANSI << "--- Trim..." << RESET_ANSI << std::endl;
