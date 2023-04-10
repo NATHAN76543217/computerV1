@@ -21,7 +21,7 @@ else
 		else ifeq ($(LANG),C++)
 			COMP		=	g++
 		endif
-		CFLAGS			+=	-D$(OSDETECT) -std=gnu11  
+		CFLAGS			+=	-D$(OSDETECT)
     else ifeq ($(UNAME_S),Darwin)
         OSDETECT 	=	OSX
 		ifeq ($(LANG),C)

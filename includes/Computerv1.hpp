@@ -3,13 +3,19 @@
 
 # include <iostream>
 # include <iomanip>
+# include <algorithm>
 # include <unistd.h>
 # include <cstdio>
 # include <cstdlib>
+# include <cstring>
 
 // Containers
 # include <string>
 # include <vector>
+
+#ifdef LINUX
+#include <sys/types.h>
+#endif
 
 // Custom classes
 # include "Nomos.hpp"

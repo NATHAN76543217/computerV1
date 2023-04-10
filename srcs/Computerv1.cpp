@@ -177,7 +177,7 @@ void			Computerv1::swapSides( void )
 */
 bool			Computerv1::trim( void )
 {
-	this->input.erase(remove_if(this->input.begin(), this->input.end(), isspace), this->input.end());
+	this->input.erase(std::remove_if(this->input.begin(), this->input.end(), isspace), this->input.end());
 	if (this->getOptVerbose())
 		std::cout << BOLD_ANSI << "Trimed: \"" << RESET_ANSI << BLUE_ANSI << this->input << RESET_ANSI << std::endl;
 	return true;

@@ -6,6 +6,10 @@
 # include <string>
 # include <sstream>
 
+#ifdef LINUX
+#include <sys/types.h>
+#endif
+
 class Nomos
 {
 

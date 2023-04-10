@@ -9,7 +9,7 @@
 #######################################################################
 
 # Name of target executable
-NAME		= computerV1
+NAME		= Computor
 LANG		= C++
 # Locations 
 SRC_DIR		= srcs
@@ -31,7 +31,7 @@ LIBRARIES	=	argparse
 # OPENSSL_VERSION=1.1
 # OPENSSL_PATH= $(shell brew --prefix openssl@$(OPENSSL_VERSION))
 
-C_DFLAGS	=	#-g3 -fsanitize=address
+C_DFLAGS	=	-std=c++17  #-g3 -fsanitize=address
 CFLAGS		=	-Wextra -Wall -Werror  $(C_DFLAGS)
 
 C_IFLAGS	=	-I $(INC_DIR) -I$(LIB_DIR)/argparse 
@@ -51,7 +51,7 @@ C_LFLAG		+=	$(addprefix -L,$(addprefix $(LIB_DIR), $(LIBRARIES)))
 include fancyPrefix.mk
 
 #   Main rule
-all: gitinit display_os comp_lib check_sources check_headers $(NAME)
+all: display_os gitinit comp_lib check_sources check_headers $(NAME)
 	@echo "$(PREFIX_INFO) done"
 
 #	include OS detection
@@ -95,8 +95,8 @@ check_headers:
 comp_lib:
 	@echo "$(PREFIX_INFO) Compiling libraries..."
 	@for lib in $(LIBRARIES) ; do \
-		echo "$(PREFIX_INFO) library $$lib done."; \
 		make -C $(LIB_DIR)/$$lib ; \
+		echo "$(PREFIX_INFO) library $$lib done."; \
 	done
 
 #	Clean of libraries
